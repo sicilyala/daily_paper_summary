@@ -20,6 +20,11 @@
     ]
   },
   "runtime": {
+    "enabled_sources": [
+      "arxiv",
+      "scopus",
+      "ieee_xplore"
+    ],
     "OUTPUT_PDF": false,
     "markdown_output_dir": "newspaper/markdown",
     "pdf_output_dir": "newspaper/pdf",

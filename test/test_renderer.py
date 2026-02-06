@@ -7,6 +7,7 @@ from renderer import render_markdown_digest
 def test_render_markdown_digest_contains_required_sections() -> None:
     summary = PaperSummary(
         external_id="2501.00001v1",
+        source="arxiv",
         title="Sample Title",
         authors=["A. Author", "B. Author"],
         affiliations=["Tsinghua University"],
@@ -32,6 +33,7 @@ def test_render_markdown_digest_contains_required_sections() -> None:
     assert "# Daily Paper Summary - 0206, 2026" in text
     assert "## Paper 1: [Sample Title](https://arxiv.org/abs/2501.00001v1)" in text
     assert "- **Authors**: A. Author; B. Author" in text
+    assert "- **Source**: arxiv" in text
     assert "- **Affiliations**: Tsinghua University" in text
     assert "- **arXiv Link**: [https://arxiv.org/abs/2501.00001v1](https://arxiv.org/abs/2501.00001v1)" in text
     assert "- **PDF Link**: [https://arxiv.org/pdf/2501.00001v1.pdf](https://arxiv.org/pdf/2501.00001v1.pdf)" in text

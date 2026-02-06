@@ -2,7 +2,7 @@
 
 一个用于论文情报跟踪的 Python 工具：
 
-- 从 arXiv 检索最近 7 天论文
+- 从 arXiv/Scopus/IEEE 检索近期论文
 - 基于关键词和领域描述做相关性排序
 - 输出 Top-K 论文英文简报到 `newspaper/markdown/MMDD_papers.md`
 - 使用 SQLite 缓存去重与历史追踪（默认 `cache/cache.sqlite3`）
@@ -29,9 +29,13 @@ uv sync
 ```bash
 # 临时生效（当前终端）
 export GLM_API_KEY="<YOUR_GLM_API_KEY>"
+export IEEE_API_KEY="<YOUR_IEEE_API_KEY>"
+export SCOPUS_API_KEY="<YOUR_SCOPUS_API_KEY>"
 
 # 持久化到 zsh
 echo 'export GLM_API_KEY="<YOUR_GLM_API_KEY>"' >> ~/.zshrc
+echo 'export IEEE_API_KEY="<YOUR_IEEE_API_KEY>"' >> ~/.zshrc
+echo 'export SCOPUS_API_KEY="<YOUR_SCOPUS_API_KEY>"' >> ~/.zshrc
 source ~/.zshrc
 ```
 

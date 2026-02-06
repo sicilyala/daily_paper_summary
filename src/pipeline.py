@@ -6,6 +6,14 @@ import json
 from dataclasses import dataclass
 from datetime import datetime, timezone
 
+from interfaces import (
+    CacheInterface,
+    RankerInterface,
+    RendererInterface,
+    SourceInterface,
+    SummarizerInterface,
+    WriterInterface,
+)
 from models import PipelineRunResult
 from normalize import deduplicate_candidates, normalize_title
 
@@ -14,12 +22,12 @@ from normalize import deduplicate_candidates, normalize_title
 class DailyPaperPipeline:
     """Coordinate source fetching, ranking, summarization, and persistence."""
 
-    source: object
-    ranker: object
-    summarizer: object
-    cache: object
-    renderer: object
-    writer: object
+    source: SourceInterface
+    ranker: RankerInterface
+    summarizer: SummarizerInterface
+    cache: CacheInterface
+    renderer: RendererInterface
+    writer: WriterInterface
     top_k: int
     min_interval_hours: int
     window_days: int = 7
@@ -55,10 +63,7 @@ class DailyPaperPipeline:
         print(f"[STEP] Source fetch completed: candidates={len(candidates)}")
 
         seen_ids, seen_title_hashes = self.cache.fetch_seen_keys()
-        print(
-            "[STEP] Deduplicating candidates: "
-            f"seen_ids={len(seen_ids)}, seen_title_hashes={len(seen_title_hashes)}"
-        )
+        print("[STEP] Deduplicating candidates: " f"seen_ids={len(seen_ids)}, seen_title_hashes={len(seen_title_hashes)}")
         deduped = deduplicate_candidates(
             candidates=candidates,
             seen_external_ids=seen_ids,

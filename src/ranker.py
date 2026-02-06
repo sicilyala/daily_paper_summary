@@ -105,10 +105,7 @@ class RelevanceRanker:
 
             score = 40 + include_hits * 10 + field_hits * 3 + category_bonus - exclude_hits * 15
             score = max(0.0, min(100.0, float(score)))
-            reason = (
-                f"Heuristic rank: include_hits={include_hits}, "
-                f"field_hits={field_hits}, exclude_hits={exclude_hits}."
-            )
+            reason = f"Heuristic rank: include_hits={include_hits}, " f"field_hits={field_hits}, exclude_hits={exclude_hits}."
             ranked.append((candidate, score, reason))
 
         ranked.sort(key=lambda item: item[1], reverse=True)

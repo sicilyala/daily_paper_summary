@@ -19,6 +19,7 @@ def test_output_pdf_default_is_false(tmp_path: Path) -> None:
     config = load_config(config_path)
 
     assert config.runtime.output_pdf is False
+    assert config.runtime.enabled_sources == ["arxiv"]
 
 
 def test_output_pdf_true_when_enabled(tmp_path: Path) -> None:
@@ -28,3 +29,15 @@ def test_output_pdf_true_when_enabled(tmp_path: Path) -> None:
     config = load_config(config_path)
 
     assert config.runtime.output_pdf is True
+
+
+def test_enabled_sources_loaded_from_config(tmp_path: Path) -> None:
+    config_path = tmp_path / "config.json"
+    _write_config(
+        config_path,
+        runtime={"enabled_sources": ["arxiv", "scopus", "ieee_xplore"]},
+    )
+
+    config = load_config(config_path)
+
+    assert config.runtime.enabled_sources == ["arxiv", "scopus", "ieee_xplore"]

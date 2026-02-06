@@ -21,6 +21,7 @@ class QueryConfig:
 class RuntimeConfig:
     """Runtime behavior configuration."""
 
+    enabled_sources: list[str] = field(default_factory=lambda: ["arxiv"])
     markdown_output_dir: str = "newspaper/markdown"
     pdf_output_dir: str = "newspaper/pdf"
     output_pdf: bool = False
@@ -83,6 +84,7 @@ def load_config(path: str | Path | None = None) -> AppConfig:
 
     runtime_data = data.get("runtime", {})
     runtime = RuntimeConfig(
+        enabled_sources=list(runtime_data.get("enabled_sources", ["arxiv"])),
         markdown_output_dir=runtime_data.get(
             "markdown_output_dir",
             "newspaper/markdown",

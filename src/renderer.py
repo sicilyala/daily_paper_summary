@@ -22,6 +22,7 @@ def render_markdown_digest(run_date: date, summaries: list[PaperSummary]) -> str
                 f"## Paper {index}: [{summary.title}]({summary.arxiv_url})",
                 "",
                 "### Paper Information",
+                f"- **Source**: {summary.source}",
                 f"- **Authors**: {'; '.join(summary.authors)}",
                 f"- **Affiliations**: {affiliations}",
                 f"- **arXiv Link**: [{summary.arxiv_url}]({summary.arxiv_url})",
