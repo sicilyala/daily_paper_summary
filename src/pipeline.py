@@ -29,9 +29,11 @@ class DailyPaperPipeline:
         """Run the full pipeline once."""
 
         now_utc = now.astimezone(timezone.utc) if now else datetime.now(timezone.utc)
+        print("[STEP] Initializing cache database")
         self.cache.init_db()
 
         if not self.cache.should_run(now=now_utc, min_interval_hours=self.min_interval_hours):
+            print(f"[STEP] Skipped by interval gate: min_interval_hours={self.min_interval_hours}")
             return PipelineRunResult(
                 generated=False,
                 summary_count=0,
@@ -39,22 +41,30 @@ class DailyPaperPipeline:
                 skipped_reason=f"Skipped by {self.min_interval_hours}h gate",
             )
 
+        print("[STEP] Fetching candidates from source")
         try:
             candidates = self.source.search_recent()
         except Exception as exc:
+            print(f"[STEP] Source fetch failed: {exc}")
             return PipelineRunResult(
                 generated=False,
                 summary_count=0,
                 output_path=None,
                 skipped_reason=f"Source fetch failed: {exc}",
             )
+        print(f"[STEP] Source fetch completed: candidates={len(candidates)}")
 
         seen_ids, seen_title_hashes = self.cache.fetch_seen_keys()
+        print(
+            "[STEP] Deduplicating candidates: "
+            f"seen_ids={len(seen_ids)}, seen_title_hashes={len(seen_title_hashes)}"
+        )
         deduped = deduplicate_candidates(
             candidates=candidates,
             seen_external_ids=seen_ids,
             seen_title_hashes=seen_title_hashes,
         )
+        print(f"[STEP] Deduplication completed: remaining={len(deduped)}")
 
         if not deduped:
             return PipelineRunResult(
@@ -64,6 +74,7 @@ class DailyPaperPipeline:
                 skipped_reason="No new papers after deduplication",
             )
 
+        print("[STEP] Upserting deduplicated papers into cache")
         for candidate in deduped:
             self.cache.upsert_paper(
                 external_id=candidate.external_id,
@@ -82,6 +93,7 @@ class DailyPaperPipeline:
                 first_seen_at=now_utc.isoformat(),
             )
 
+        print("[STEP] Ranking candidates")
         ranked = self.ranker.rank(deduped)
         if not ranked:
             return PipelineRunResult(
@@ -90,8 +102,10 @@ class DailyPaperPipeline:
                 output_path=None,
                 skipped_reason="No candidate survives ranking",
             )
+        print(f"[STEP] Ranking completed: ranked={len(ranked)}, top_k={self.top_k}")
 
         ranked_top = ranked[: self.top_k]
+        print(f"[STEP] Summarizing selected papers: selected={len(ranked_top)}")
         summaries = [
             self.summarizer.summarize(
                 candidate=item[0],
@@ -101,10 +115,13 @@ class DailyPaperPipeline:
             for item in ranked_top
         ]
 
+        print("[STEP] Rendering and writing outputs")
         markdown_text = self.renderer.render(run_date=now_utc.date(), summaries=summaries)
         output_path = self.writer.write(run_date=now_utc.date(), text=markdown_text)
+        print(f"[STEP] Output written: {output_path}")
 
         emitted_ids = [item[0].external_id for item in ranked_top]
+        print("[STEP] Recording digest metadata")
         self.cache.record_digest(
             run_at=now_utc,
             output_path=output_path,
@@ -113,6 +130,7 @@ class DailyPaperPipeline:
             top_k=self.top_k,
             items=emitted_ids,
         )
+        print("[STEP] Pipeline completed")
 
         return PipelineRunResult(
             generated=True,

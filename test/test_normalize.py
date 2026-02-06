@@ -1,6 +1,5 @@
 from datetime import datetime, timezone
 
-import pytest
 
 from models import PaperCandidate
 from normalize import deduplicate_candidates, normalize_title

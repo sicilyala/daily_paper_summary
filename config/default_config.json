@@ -20,12 +20,13 @@
     ]
   },
   "runtime": {
+    "OUTPUT_PDF": false,
     "markdown_output_dir": "newspaper/markdown",
     "pdf_output_dir": "newspaper/pdf",
     "db_path": "cache/cache.sqlite3",
     "top_k": 10,
-    "window_days": 7,
-    "max_results": 100,
+    "window_days": 30,
+    "max_results": 1000,
     "min_interval_hours": 48,
     "model_name": "glm-4.7"
   },

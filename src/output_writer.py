@@ -17,9 +17,10 @@ from reportlab.platypus import ListFlowable, ListItem, Paragraph, Preformatted, 
 class MarkdownWriter:
     """Write digest to markdown and mirrored PDF output."""
 
-    def __init__(self, markdown_dir: str | Path, pdf_dir: str | Path):
+    def __init__(self, markdown_dir: str | Path, pdf_dir: str | Path, output_pdf: bool = False):
         self.markdown_dir = Path(markdown_dir)
         self.pdf_dir = Path(pdf_dir)
+        self.output_pdf = output_pdf
         self.markdown_dir.mkdir(parents=True, exist_ok=True)
         self.pdf_dir.mkdir(parents=True, exist_ok=True)
 
@@ -29,7 +30,8 @@ class MarkdownWriter:
         pdf_path = self.pdf_dir / f"{stem}.pdf"
 
         markdown_path.write_text(text, encoding="utf-8")
-        self._write_pdf(text=text, output_path=pdf_path)
+        if self.output_pdf:
+            self._write_pdf(text=text, output_path=pdf_path)
         return str(markdown_path)
 
     def _write_pdf(self, text: str, output_path: Path) -> None:

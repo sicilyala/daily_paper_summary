@@ -40,7 +40,7 @@ source ~/.zshrc
 ```bash
 cd /path/to/daily_paper_summary
 source .venv/bin/activate
-python main.py 
+python main.py --config config/default_config.json
 ```
 
 ## 4. 输出位置

@@ -8,7 +8,7 @@ def test_markdown_writer_outputs_markdown_and_pdf(tmp_path: Path) -> None:
     markdown_dir = tmp_path / "newspaper" / "markdown"
     pdf_dir = tmp_path / "newspaper" / "pdf"
 
-    writer = MarkdownWriter(markdown_dir=markdown_dir, pdf_dir=pdf_dir)
+    writer = MarkdownWriter(markdown_dir=markdown_dir, pdf_dir=pdf_dir, output_pdf=True)
     output_path = writer.write(run_date=date(2026, 2, 6), text="# Title\n\nBody")
 
     md_path = markdown_dir / "0206_papers.md"
@@ -18,6 +18,17 @@ def test_markdown_writer_outputs_markdown_and_pdf(tmp_path: Path) -> None:
     assert md_path.exists()
     assert pdf_path.exists()
     assert pdf_path.read_bytes().startswith(b"%PDF")
+
+
+def test_markdown_writer_skips_pdf_when_disabled(tmp_path: Path) -> None:
+    markdown_dir = tmp_path / "newspaper" / "markdown"
+    pdf_dir = tmp_path / "newspaper" / "pdf"
+
+    writer = MarkdownWriter(markdown_dir=markdown_dir, pdf_dir=pdf_dir)
+    writer.write(run_date=date(2026, 2, 6), text="# Title\n\nBody")
+
+    assert (markdown_dir / "0206_papers.md").exists()
+    assert not (pdf_dir / "0206_papers.pdf").exists()
 
 
 def test_parse_markdown_blocks_preserves_structure() -> None:

@@ -23,6 +23,7 @@ class RuntimeConfig:
 
     markdown_output_dir: str = "newspaper/markdown"
     pdf_output_dir: str = "newspaper/pdf"
+    output_pdf: bool = False
     db_path: str = "newspaper/cache.sqlite3"
     top_k: int = 10
     window_days: int = 7
@@ -90,6 +91,7 @@ def load_config(path: str | Path | None = None) -> AppConfig:
             "pdf_output_dir",
             "newspaper/pdf",
         ),
+        output_pdf=bool(runtime_data.get("OUTPUT_PDF", runtime_data.get("output_pdf", False))),
         db_path=runtime_data.get("db_path", "newspaper/cache.sqlite3"),
         top_k=int(runtime_data.get("top_k", 10)),
         window_days=int(runtime_data.get("window_days", 7)),
