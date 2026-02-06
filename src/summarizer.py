@@ -29,6 +29,7 @@ class PaperSummarizer:
             if output:
                 return PaperSummary(
                     external_id=candidate.external_id,
+                    source=candidate.source,
                     title=output.get("title", candidate.title),
                     authors=output.get("authors", candidate.authors),
                     affiliations=output.get("affiliations", candidate.affiliations),
@@ -83,6 +84,7 @@ class PaperSummarizer:
 
         return PaperSummary(
             external_id=candidate.external_id,
+            source=candidate.source,
             title=candidate.title,
             authors=candidate.authors,
             affiliations=candidate.affiliations,

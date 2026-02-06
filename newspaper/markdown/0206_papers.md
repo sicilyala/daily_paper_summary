@@ -3,6 +3,7 @@
 ## Paper 1: [DeepUrban: Interaction-Aware Trajectory Prediction and Planning for Automated Driving by Aerial Imagery](http://arxiv.org/abs/2601.10554v2)
 
 ### Paper Information
+- **Source**: arxiv
 - **Authors**: Constantin Selzer; Fabian B. Flohr
 - **Affiliations**: N/A
 - **arXiv Link**: [http://arxiv.org/abs/2601.10554v2](http://arxiv.org/abs/2601.10554v2)
@@ -32,6 +33,7 @@ Fallback mode: infer empirical evidence from abstract wording.
 ## Paper 2: [Incident-Guided Spatiotemporal Traffic Forecasting](http://arxiv.org/abs/2602.02528v1)
 
 ### Paper Information
+- **Source**: arxiv
 - **Authors**: Lixiang Fan; Bohao Li; Tao Zou; Bowen Du; Junchen Ye
 - **Affiliations**: N/A
 - **arXiv Link**: [http://arxiv.org/abs/2602.02528v1](http://arxiv.org/abs/2602.02528v1)
@@ -61,6 +63,7 @@ Fallback mode: infer empirical evidence from abstract wording.
 ## Paper 3: [TSBOW: Traffic Surveillance Benchmark for Occluded Vehicles Under Various Weather Conditions](http://arxiv.org/abs/2602.05414v1)
 
 ### Paper Information
+- **Source**: arxiv
 - **Authors**: Ngoc Doan-Minh Huynh; Duong Nguyen-Ngoc Tran; Long Hoang Pham; Tai Huu-Phuong Tran; Hyung-Joon Jeon; Huy-Hung Nguyen; Duong Khac Vu; Hyung-Min Jeon; Son Hong Phan; Quoc Pham-Nam Ho; Chi Dai Tran; Trinh Le Ba Khanh; Jae Wook Jeon
 - **Affiliations**: N/A
 - **arXiv Link**: [http://arxiv.org/abs/2602.05414v1](http://arxiv.org/abs/2602.05414v1)
@@ -90,6 +93,7 @@ Fallback mode: infer empirical evidence from abstract wording.
 ## Paper 4: [PlanTRansformer: Unified Prediction and Planning with Goal-conditioned Transformer](http://arxiv.org/abs/2602.03376v1)
 
 ### Paper Information
+- **Source**: arxiv
 - **Authors**: Constantin Selzer; Fabina B. Flohr
 - **Affiliations**: N/A
 - **arXiv Link**: [http://arxiv.org/abs/2602.03376v1](http://arxiv.org/abs/2602.03376v1)
@@ -119,6 +123,7 @@ Fallback mode: infer empirical evidence from abstract wording.
 ## Paper 5: [PIMCST: Physics-Informed Multi-Phase Consensus and Spatio-Temporal Few-Shot Learning for Traffic Flow Forecasting](http://arxiv.org/abs/2602.01936v1)
 
 ### Paper Information
+- **Source**: arxiv
 - **Authors**: Abdul Joseph Fofanah; Lian Wen; David Chen
 - **Affiliations**: N/A
 - **arXiv Link**: [http://arxiv.org/abs/2602.01936v1](http://arxiv.org/abs/2602.01936v1)
@@ -148,6 +153,7 @@ Fallback mode: infer empirical evidence from abstract wording.
 ## Paper 6: [Spatiotemporal Semantic V2X Framework for Cooperative Collision Prediction](http://arxiv.org/abs/2601.17216v2)
 
 ### Paper Information
+- **Source**: arxiv
 - **Authors**: Murat Arda Onsu; Poonam Lohan; Burak Kantarci; Aisha Syed; Matthew Andrews; Sean Kennedy
 - **Affiliations**: N/A
 - **arXiv Link**: [http://arxiv.org/abs/2601.17216v2](http://arxiv.org/abs/2601.17216v2)
@@ -177,6 +183,7 @@ Fallback mode: infer empirical evidence from abstract wording.
 ## Paper 7: [BlocksecRT-DETR: Decentralized Privacy-Preserving and Token-Efficient Federated Transformer Learning for Secure Real-Time Object Detection in ITS](http://arxiv.org/abs/2601.12693v1)
 
 ### Paper Information
+- **Source**: arxiv
 - **Authors**: Mohoshin Ara Tahera; Sabbir Rahman; Shuvalaxmi Dass; Sharif Ullah; Mahmoud Abouyessef
 - **Affiliations**: N/A
 - **arXiv Link**: [http://arxiv.org/abs/2601.12693v1](http://arxiv.org/abs/2601.12693v1)
@@ -206,6 +213,7 @@ Fallback mode: infer empirical evidence from abstract wording.
 ## Paper 8: [Spatial-Temporal Feedback Diffusion Guidance for Controlled Traffic Imputation](http://arxiv.org/abs/2601.04572v1)
 
 ### Paper Information
+- **Source**: arxiv
 - **Authors**: Xiaowei Mao; Huihu Ding; Yan Lin; Tingrui Wu; Shengnan Guo; Dazhuo Qiu; Feiling Fang; Jilin Hu; Huaiyu Wan
 - **Affiliations**: N/A
 - **arXiv Link**: [http://arxiv.org/abs/2601.04572v1](http://arxiv.org/abs/2601.04572v1)
@@ -235,6 +243,7 @@ Fallback mode: infer empirical evidence from abstract wording.
 ## Paper 9: [GEnSHIN: Graphical Enhanced Spatio-temporal Hierarchical Inference Network for Traffic Flow Prediction](http://arxiv.org/abs/2601.04550v1)
 
 ### Paper Information
+- **Source**: arxiv
 - **Authors**: Zhiyan Zhou; Junjie Liao; Manho Zhang; Yingyi Liao; Ziai Wang
 - **Affiliations**: N/A
 - **arXiv Link**: [http://arxiv.org/abs/2601.04550v1](http://arxiv.org/abs/2601.04550v1)
@@ -264,6 +273,7 @@ Fallback mode: infer empirical evidence from abstract wording.
 ## Paper 10: [PAtt: A Pattern Attention Network for ETA Prediction Using Historical Speed Profiles](http://arxiv.org/abs/2601.13793v1)
 
 ### Paper Information
+- **Source**: arxiv
 - **Authors**: ByeoungDo Kim; JunYeop Na; Kyungwook Tak; JunTae Kim; DongHyeon Kim; Duckky Kim
 - **Affiliations**: N/A
 - **arXiv Link**: [http://arxiv.org/abs/2601.13793v1](http://arxiv.org/abs/2601.13793v1)

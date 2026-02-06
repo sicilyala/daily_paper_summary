@@ -39,6 +39,7 @@ class FakeSummarizer:
     def summarize(self, candidate, relevance_score, relevance_reason):
         return PaperSummary(
             external_id=candidate.external_id,
+            source=candidate.source,
             title=candidate.title,
             authors=candidate.authors,
             affiliations=candidate.affiliations,

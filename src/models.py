@@ -29,6 +29,7 @@ class PaperSummary:
     """Structured summary content for markdown rendering."""
 
     external_id: str
+    source: str
     title: str
     authors: list[str]
     affiliations: list[str]
