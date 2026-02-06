@@ -4,11 +4,11 @@
 
 - 从 arXiv 检索最近 7 天论文
 - 基于关键词和领域描述做相关性排序
-- 输出 Top-K 论文英文简报到 `newspaper/MMDD_papers.md`
+- 输出 Top-K 论文英文简报到 `newspaper/markdown/MMDD_papers.md`
 - 使用 SQLite 缓存去重与历史追踪（默认 `cache/cache.sqlite3`）
 - 内置 48h 运行闸门，避免重复生成
 
-## 1. Linux 部署（可直接复制）
+## 1. Linux 部署
 
 ```bash
 # 进入项目目录
@@ -24,7 +24,7 @@ source .venv/bin/activate
 uv sync
 ```
 
-## 2. 配置 API Key（可直接复制）
+## 2. 配置 API Key
 
 ```bash
 # 临时生效（当前终端）
@@ -35,7 +35,7 @@ echo 'export GLM_API_KEY="<YOUR_GLM_API_KEY>"' >> ~/.zshrc
 source ~/.zshrc
 ```
 
-## 3. 运行程序（可直接复制）
+## 3. 运行程序
 
 ```bash
 cd /path/to/daily_paper_summary
