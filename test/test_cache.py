@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
 
-from daily_paper_summary.cache import SQLiteCache
+from cache import SQLiteCache
 
 
 def test_should_run_respects_48h_gate(tmp_path) -> None:

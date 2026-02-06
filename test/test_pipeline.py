@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 
-from daily_paper_summary.models import PaperCandidate, PaperSummary
-from daily_paper_summary.pipeline import DailyPaperPipeline
+from models import PaperCandidate, PaperSummary
+from pipeline import DailyPaperPipeline
 
 
 class FakeSource:
@@ -23,6 +23,11 @@ class FakeSource:
                 categories=["cs.AI"],
             )
         ]
+
+
+class BrokenSource:
+    def search_recent(self):
+        raise RuntimeError("arxiv fetch timeout")
 
 
 class FakeRanker:
@@ -99,3 +104,23 @@ def test_pipeline_runs_end_to_end():
     assert result.summary_count == 1
     assert result.output_path == "newspaper/0206_papers.md"
     assert pipeline.cache.recorded is True
+
+
+def test_pipeline_returns_fetch_failure_reason():
+    pipeline = DailyPaperPipeline(
+        source=BrokenSource(),
+        ranker=FakeRanker(),
+        summarizer=FakeSummarizer(),
+        cache=FakeCache(),
+        renderer=FakeRenderer(),
+        writer=FakeWriter(),
+        top_k=10,
+        min_interval_hours=48,
+    )
+
+    result = pipeline.run(now=datetime(2026, 2, 6, tzinfo=timezone.utc))
+
+    assert result.generated is False
+    assert result.summary_count == 0
+    assert result.output_path is None
+    assert result.skipped_reason == "Source fetch failed: arxiv fetch timeout"

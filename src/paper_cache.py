@@ -107,9 +107,7 @@ class SQLiteCache:
 
         values = [kwargs[col] for col in columns]
         placeholders = ",".join(["?"] * len(columns))
-        updates = ", ".join(
-            f"{col}=excluded.{col}" for col in columns if col not in {"external_id", "first_seen_at"}
-        )
+        updates = ", ".join(f"{col}=excluded.{col}" for col in columns if col not in {"external_id", "first_seen_at"})
 
         with self._connect() as conn:
             conn.execute(
@@ -141,7 +139,9 @@ class SQLiteCache:
                 """,
                 (run_at_iso, output_path, model_used, window_days, top_k),
             )
-            digest_id = int(cursor.lastrowid)
+            digest_id = cursor.lastrowid
+            if digest_id is None:
+                raise RuntimeError("Failed to insert digest record: lastrowid is None")
 
             for index, external_id in enumerate(items, start=1):
                 conn.execute(

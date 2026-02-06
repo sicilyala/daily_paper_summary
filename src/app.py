@@ -5,14 +5,14 @@ from __future__ import annotations
 import argparse
 from datetime import datetime, timezone
 
-from .arxiv_source import ArxivSource
-from .cache import SQLiteCache
-from .config import load_config
-from .io import MarkdownWriter
-from .pipeline import DailyPaperPipeline
-from .ranker import RelevanceRanker
-from .renderer import MarkdownRenderer
-from .summarizer import PaperSummarizer
+from arxiv_source import ArxivSource
+from paper_cache import SQLiteCache
+from paper_config import load_config
+from output_writer import MarkdownWriter
+from pipeline import DailyPaperPipeline
+from ranker import RelevanceRanker
+from renderer import MarkdownRenderer
+from summarizer import PaperSummarizer
 
 
 def run_pipeline(config_path: str | None = None) -> dict:
@@ -80,9 +80,7 @@ def main() -> None:
 
     result = run_pipeline(config_path=args.config)
     if result["generated"]:
-        print(
-            f"Generated digest: {result['summary_count']} papers -> {result['output_path']}"
-        )
+        print(f"Generated digest: {result['summary_count']} papers -> {result['output_path']}")
     else:
         reason = result.get("skipped_reason") or "No output"
         print(f"No digest generated: {reason}")

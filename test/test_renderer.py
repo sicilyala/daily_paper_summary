@@ -1,7 +1,7 @@
 from datetime import date
 
-from daily_paper_summary.models import PaperSummary
-from daily_paper_summary.renderer import render_markdown_digest
+from models import PaperSummary
+from renderer import render_markdown_digest
 
 
 def test_render_markdown_digest_contains_required_sections() -> None:

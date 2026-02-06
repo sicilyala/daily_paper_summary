@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import json
 
-from .llm import GLMClient
-from .models import PaperCandidate
+from llm import GLMClient
+from models import PaperCandidate
 
 
 class RelevanceRanker:

@@ -6,8 +6,8 @@ import json
 from dataclasses import dataclass
 from datetime import datetime, timezone
 
-from .models import PipelineRunResult
-from .normalize import deduplicate_candidates, normalize_title
+from models import PipelineRunResult
+from normalize import deduplicate_candidates, normalize_title
 
 
 @dataclass(slots=True)
@@ -39,7 +39,16 @@ class DailyPaperPipeline:
                 skipped_reason=f"Skipped by {self.min_interval_hours}h gate",
             )
 
-        candidates = self.source.search_recent()
+        try:
+            candidates = self.source.search_recent()
+        except Exception as exc:
+            return PipelineRunResult(
+                generated=False,
+                summary_count=0,
+                output_path=None,
+                skipped_reason=f"Source fetch failed: {exc}",
+            )
+
         seen_ids, seen_title_hashes = self.cache.fetch_seen_keys()
         deduped = deduplicate_candidates(
             candidates=candidates,

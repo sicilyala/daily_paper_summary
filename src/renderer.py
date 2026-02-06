@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from .models import PaperSummary
+from models import PaperSummary
 
 
 def render_markdown_digest(run_date: date, summaries: list[PaperSummary]) -> str:

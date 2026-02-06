@@ -9,7 +9,7 @@ dependencies = [
 ]
 
 [project.scripts]
-daily-paper-summary = "daily_paper_summary.app:main"
+daily-paper-summary = "app:main"
 
 [build-system]
 requires = ["setuptools>=68", "wheel"]

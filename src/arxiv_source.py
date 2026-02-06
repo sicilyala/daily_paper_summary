@@ -7,8 +7,8 @@ from urllib.parse import quote
 from urllib.request import urlopen
 import xml.etree.ElementTree as ET
 
-from .models import PaperCandidate
-from .utils import extract_code_urls
+from models import PaperCandidate
+from utils import extract_code_urls
 
 ARXIV_API_URL = "http://export.arxiv.org/api/query"
 ATOM_NS = {"atom": "http://www.w3.org/2005/Atom", "arxiv": "http://arxiv.org/schemas/atom"}
@@ -35,10 +35,7 @@ class ArxivSource:
 
     def search_recent(self) -> list[PaperCandidate]:
         """Search arXiv and return candidates filtered to recent window."""
-        try:
-            xml_text = self._fetch_atom_feed()
-        except Exception:
-            return []
+        xml_text = self._fetch_atom_feed()
         return self._parse_feed(xml_text)
 
     def _build_query(self) -> str:

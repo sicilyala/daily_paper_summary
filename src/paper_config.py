@@ -34,12 +34,8 @@ class RuntimeConfig:
 class PromptConfig:
     """Prompt templates for LLM processing."""
 
-    ranker_system: str = (
-        "You are an academic paper relevance scorer. Return strict JSON only."
-    )
-    summarizer_system: str = (
-        "You are an academic summarizer. Return strict JSON only in English."
-    )
+    ranker_system: str = "You are an academic paper relevance scorer. Return strict JSON only."
+    summarizer_system: str = "You are an academic summarizer. Return strict JSON only in English."
 
 
 @dataclass(slots=True)

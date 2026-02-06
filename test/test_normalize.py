@@ -2,8 +2,8 @@ from datetime import datetime, timezone
 
 import pytest
 
-from daily_paper_summary.models import PaperCandidate
-from daily_paper_summary.normalize import deduplicate_candidates, normalize_title
+from models import PaperCandidate
+from normalize import deduplicate_candidates, normalize_title
 
 
 def make_candidate(arxiv_id: str, title: str) -> PaperCandidate:

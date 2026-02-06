@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 
-from .models import PaperCandidate
+from models import PaperCandidate
 
 NON_ALNUM_PATTERN = re.compile(r"[^a-z0-9]+")
 SPACES_PATTERN = re.compile(r"\s+")
