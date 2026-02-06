@@ -20,7 +20,8 @@
     ]
   },
   "runtime": {
-    "output_dir": "newspaper",
+    "markdown_output_dir": "newspaper/markdown",
+    "pdf_output_dir": "newspaper/pdf",
     "db_path": "cache/cache.sqlite3",
     "top_k": 10,
     "window_days": 7,

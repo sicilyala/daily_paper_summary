@@ -21,7 +21,8 @@ class QueryConfig:
 class RuntimeConfig:
     """Runtime behavior configuration."""
 
-    output_dir: str = "newspaper"
+    markdown_output_dir: str = "newspaper/markdown"
+    pdf_output_dir: str = "newspaper/pdf"
     db_path: str = "newspaper/cache.sqlite3"
     top_k: int = 10
     window_days: int = 7
@@ -81,7 +82,14 @@ def load_config(path: str | Path | None = None) -> AppConfig:
 
     runtime_data = data.get("runtime", {})
     runtime = RuntimeConfig(
-        output_dir=runtime_data.get("output_dir", "newspaper"),
+        markdown_output_dir=runtime_data.get(
+            "markdown_output_dir",
+            "newspaper/markdown",
+        ),
+        pdf_output_dir=runtime_data.get(
+            "pdf_output_dir",
+            "newspaper/pdf",
+        ),
         db_path=runtime_data.get("db_path", "newspaper/cache.sqlite3"),
         top_k=int(runtime_data.get("top_k", 10)),
         window_days=int(runtime_data.get("window_days", 7)),

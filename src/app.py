@@ -41,7 +41,10 @@ def run_pipeline(config_path: str | None = None) -> dict:
         system_prompt=config.prompts.summarizer_system,
     )
     renderer = MarkdownRenderer()
-    writer = MarkdownWriter(config.runtime.output_dir)
+    writer = MarkdownWriter(
+        markdown_dir=config.runtime.markdown_output_dir,
+        pdf_dir=config.runtime.pdf_output_dir,
+    )
 
     pipeline = DailyPaperPipeline(
         source=source,
