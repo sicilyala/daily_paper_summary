@@ -1,9 +1,26 @@
 [project]
 name = "daily-paper-summary"
 version = "0.1.0"
-description = "Add your description here"
+description = "arXiv-based daily paper summary generator"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "pytest>=9.0.2",
 ]
+
+[project.scripts]
+daily-paper-summary = "daily_paper_summary.app:main"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+addopts = "-q"

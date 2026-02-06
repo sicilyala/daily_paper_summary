@@ -1,0 +1,35 @@
+{
+  "query": {
+    "research_field": "Traffic engineering, reinforcement learning, and AI with focus on vehicle-pedestrian interaction and safety.",
+    "include_keywords": [
+      "intelligent transportation",
+      "trajectory prediction and planning",
+      "transportation safety",
+      "reinforcement learning in transportation"
+    ],
+    "exclude_keywords": [
+      "medical imaging",
+      "protein",
+      "astronomy"
+    ],
+    "categories": [
+      "cs.AI",
+      "cs.LG",
+      "stat.ML",
+      "cs.CV"
+    ]
+  },
+  "runtime": {
+    "output_dir": "newspaper",
+    "db_path": "cache/cache.sqlite3",
+    "top_k": 10,
+    "window_days": 7,
+    "max_results": 100,
+    "min_interval_hours": 48,
+    "model_name": "glm-4.7"
+  },
+  "prompts": {
+    "ranker_system": "You are an expert reviewer in transportation engineering, reinforcement learning, and AI. Score paper relevance with strict JSON only.",
+    "summarizer_system": "You are an academic summarizer. Output concise, faithful English JSON only. Never invent missing facts."
+  }
+}
