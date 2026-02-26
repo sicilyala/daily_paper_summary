@@ -1,6 +1,6 @@
 from types import SimpleNamespace
 
-from app import _build_runtime_log_lines
+from app import _build_arg_parser, _build_runtime_log_lines
 
 
 def test_runtime_log_lines_use_actual_config_values() -> None:
@@ -28,3 +28,12 @@ def test_runtime_log_lines_use_actual_config_values() -> None:
     assert "max_results=1000" in joined
     assert "min_interval_hours=48" in joined
     assert "model_name=glm-4.7" in joined
+
+
+def test_arg_parser_supports_delete_last_file_flag() -> None:
+    parser = _build_arg_parser()
+
+    args = parser.parse_args(["--config", "config/default_config.json", "--deleteLastFile"])
+
+    assert args.config == "config/default_config.json"
+    assert args.delete_last_file is True

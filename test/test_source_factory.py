@@ -27,6 +27,8 @@ def test_build_source_includes_scopus_ieee_when_keys_present(monkeypatch) -> Non
             enabled_sources=["arxiv", "scopus", "ieee_xplore"],
             max_results=100,
             window_days=7,
+            start_year=2024,
+            end_year=2026,
         ),
     )
 
@@ -34,6 +36,9 @@ def test_build_source_includes_scopus_ieee_when_keys_present(monkeypatch) -> Non
 
     assert source.__class__.__name__ == "MultiSource"
     assert len(source.sources) == 3
+    ieee_source = [item for item in source.sources if item.__class__.__name__ == "IeeeXploreSource"][0]
+    assert ieee_source.start_year == 2024
+    assert ieee_source.end_year == 2026
 
 
 def test_build_source_skips_sources_without_keys(monkeypatch) -> None:

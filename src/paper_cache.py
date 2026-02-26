@@ -85,6 +85,28 @@ class SQLiteCache:
         title_norms = {row["title_norm"] for row in rows}
         return external_ids, title_norms
 
+    def delete_last_digest(self) -> str | None:
+        """Delete latest digest row (and items) and return its output path."""
+
+        with self._connect() as conn:
+            row = conn.execute(
+                """
+                SELECT digest_id, output_path
+                FROM digests
+                ORDER BY run_at DESC, digest_id DESC
+                LIMIT 1
+                """
+            ).fetchone()
+            if row is None:
+                return None
+
+            digest_id = row["digest_id"]
+            output_path = row["output_path"]
+            conn.execute("DELETE FROM digest_items WHERE digest_id = ?", (digest_id,))
+            conn.execute("DELETE FROM digests WHERE digest_id = ?", (digest_id,))
+
+        return str(output_path)
+
     def upsert_paper(self, **kwargs: str) -> None:
         """Upsert a paper row using keyword args matching table columns."""
 

@@ -43,8 +43,7 @@ source ~/.zshrc
 
 ```bash
 cd /path/to/daily_paper_summary
-source .venv/bin/activate
-python main.py --config config/default_config.json
+source .venv/bin/activate && python main.py --config config/default_config.json --deleteLastFile
 ```
 
 ## 4. 输出位置

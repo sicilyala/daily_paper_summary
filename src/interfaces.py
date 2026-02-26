@@ -42,6 +42,8 @@ class CacheInterface(Protocol):
 
     def upsert_paper(self, **kwargs: str) -> None: ...
 
+    def delete_last_digest(self) -> str | None: ...
+
     def record_digest(
         self,
         run_at: datetime,

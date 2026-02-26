@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import json
+import time
 from datetime import datetime, timedelta, timezone
 from urllib.parse import urlencode
+from urllib.error import URLError
 from urllib.request import urlopen
 
 from models import PaperCandidate
@@ -23,6 +25,8 @@ class IeeeXploreSource:
         max_results: int,
         window_days: int,
         api_key: str,
+        start_year: int = 2023,
+        end_year: int | None = None,
     ):
         self.research_field = research_field
         self.include_keywords = include_keywords
@@ -30,10 +34,12 @@ class IeeeXploreSource:
         self.max_results = max_results
         self.window_days = window_days
         self.api_key = api_key
+        self.start_year = start_year
+        self.end_year = end_year if end_year is not None else datetime.now(timezone.utc).year
 
     def search_recent(self) -> list[PaperCandidate]:
-        payload = self._fetch_json()
-        return self._parse_payload(payload)
+        articles = self._fetch_articles()
+        return self._parse_articles(articles)
 
     def _build_querytext(self) -> str:
         tokens = self.include_keywords or [self.research_field]
@@ -43,22 +49,48 @@ class IeeeXploreSource:
             query += f' NOT "{token}"'
         return query
 
-    def _fetch_json(self) -> dict:
+    def _fetch_articles(self) -> list[dict]:
+        page_size = min(self.max_results, 200)
+        start_record = 1
+        collected: list[dict] = []
+
+        while len(collected) < self.max_results:
+            payload = self._fetch_page(start_record=start_record, max_records=page_size)
+            page_articles = payload.get("articles", [])
+            if not page_articles:
+                break
+
+            collected.extend(page_articles)
+            if len(page_articles) < page_size:
+                break
+            start_record += page_size
+
+        return collected[: self.max_results]
+
+    def _fetch_page(self, start_record: int, max_records: int | None = None) -> dict:
         params = {
             "apikey": self.api_key,
             "format": "json",
-            "max_records": min(self.max_results, 200),
-            "start_record": 1,
+            "max_records": max_records if max_records is not None else min(self.max_results, 200),
+            "start_record": start_record,
             "sort_order": "desc",
             "sort_field": "article_number",
             "querytext": self._build_querytext(),
+            "start_year": self.start_year,
+            "end_year": self.end_year,
         }
         url = f"{IEEE_API_URL}?{urlencode(params)}"
-        with urlopen(url, timeout=30) as resp:
-            return json.loads(resp.read().decode("utf-8"))
+        attempts = 3
+        for attempt in range(1, attempts + 1):
+            try:
+                with urlopen(url, timeout=30) as resp:
+                    return json.loads(resp.read().decode("utf-8"))
+            except URLError:
+                if attempt == attempts:
+                    raise
+                time.sleep(attempt)
 
-    def _parse_payload(self, payload: dict) -> list[PaperCandidate]:
-        articles = payload.get("articles", [])
+    def _parse_articles(self, articles: list[dict]) -> list[PaperCandidate]:
         earliest = datetime.now(timezone.utc) - timedelta(days=self.window_days)
 
         candidates: list[PaperCandidate] = []
@@ -105,7 +137,14 @@ class IeeeXploreSource:
 def _parse_ieee_date(article: dict) -> datetime | None:
     publication_date = article.get("publication_date")
     if publication_date:
-        for fmt in ["%d %B %Y", "%B %Y", "%Y"]:
+        for fmt in [
+            "%d %B %Y",
+            "%B %Y",
+            "%d %b %Y",
+            "%b %Y",
+            "%b. %Y",
+            "%Y",
+        ]:
             try:
                 dt = datetime.strptime(str(publication_date), fmt)
                 return dt.replace(tzinfo=timezone.utc)

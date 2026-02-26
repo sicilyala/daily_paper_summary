@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
 from paper_cache import SQLiteCache
 
@@ -50,3 +51,33 @@ def test_save_and_fetch_seen_keys(tmp_path) -> None:
     ids, titles = cache.fetch_seen_keys()
     assert "2501.00001v1" in ids
     assert "a" in titles
+
+
+def test_delete_last_digest_removes_gate_and_returns_output_path(tmp_path: Path) -> None:
+    db_path = tmp_path / "cache.sqlite3"
+    cache = SQLiteCache(db_path)
+    cache.init_db()
+
+    now = datetime(2026, 2, 6, 1, 0, tzinfo=timezone.utc)
+    cache.record_digest(
+        run_at=now,
+        output_path="newspaper/0206_papers.md",
+        model_used="glm-4.7",
+        window_days=7,
+        top_k=10,
+        items=["id1", "id2"],
+    )
+    assert cache.should_run(now=now + timedelta(hours=1), min_interval_hours=48) is False
+
+    removed_output_path = cache.delete_last_digest()
+
+    assert removed_output_path == "newspaper/0206_papers.md"
+    assert cache.should_run(now=now + timedelta(hours=1), min_interval_hours=48) is True
+
+
+def test_delete_last_digest_returns_none_when_history_empty(tmp_path: Path) -> None:
+    db_path = tmp_path / "cache.sqlite3"
+    cache = SQLiteCache(db_path)
+    cache.init_db()
+
+    assert cache.delete_last_digest() is None

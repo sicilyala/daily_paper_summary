@@ -21,6 +21,26 @@ from scopus_source import ScopusSource
 from summarizer import PaperSummarizer
 
 
+def _build_arg_parser() -> argparse.ArgumentParser:
+    """Build CLI argument parser."""
+
+    parser = argparse.ArgumentParser(description="Generate daily arXiv paper summary")
+    parser.add_argument(
+        "--config",
+        type=str,
+        default=None,
+        help="Path to config json. Default: config/default_config.json",
+    )
+    parser.add_argument(
+        "--delete-last-file",
+        "--deleteLastFile",
+        dest="delete_last_file",
+        action="store_true",  # store_true means it's a flag that defaults to False, and becomes True if specified
+        help="Delete last generated markdown file and clear latest digest record before running.",
+    )
+    return parser
+
+
 def _build_runtime_log_lines(config) -> list[str]:
     runtime = config.runtime
     query = config.query
@@ -28,6 +48,8 @@ def _build_runtime_log_lines(config) -> list[str]:
         f"  research_field={query.research_field}",
         f"  include_keywords={query.include_keywords}",
         f"  enabled_sources={getattr(runtime, 'enabled_sources', ['arxiv'])}",
+        f"  start_year={getattr(runtime, 'start_year', 2023)}",
+        f"  end_year={getattr(runtime, 'end_year', datetime.now(timezone.utc).year)}",
         f"  top_k={runtime.top_k}",
         f"  window_days={runtime.window_days}",
         f"  max_results={runtime.max_results}",
@@ -37,6 +59,27 @@ def _build_runtime_log_lines(config) -> list[str]:
         f"  output_pdf={getattr(runtime, 'output_pdf', False)}",
         f"  pdf_output_dir={getattr(runtime, 'pdf_output_dir', 'N/A')}",
     ]
+
+
+def _cleanup_last_digest_file(cache: SQLiteCache, delete_last_file: bool) -> None:
+    """Optionally delete the last digest markdown and clear its digest record."""
+
+    if not delete_last_file:
+        return
+
+    print("[STEP] deleteLastFile enabled: cleaning up last digest output and gate record")
+    cache.init_db()
+    last_output_path = cache.delete_last_digest()
+    if not last_output_path:
+        print("[STEP] No historical digest found for cleanup")
+        return
+
+    output_path = Path(last_output_path)
+    if output_path.exists():
+        output_path.unlink()
+        print(f"[STEP] Deleted last digest markdown: {output_path}")
+    else:
+        print(f"[STEP] Last digest markdown not found on disk: {output_path}")
 
 
 def _build_source(config) -> SourceInterface:
@@ -84,6 +127,8 @@ def _build_source(config) -> SourceInterface:
                     max_results=runtime.max_results,
                     window_days=runtime.window_days,
                     api_key=ieee_key,
+                    start_year=getattr(runtime, "start_year", 2023),
+                    end_year=getattr(runtime, "end_year", datetime.now(timezone.utc).year),
                 )
             )
         else:
@@ -96,7 +141,7 @@ def _build_source(config) -> SourceInterface:
     return MultiSource(sources)
 
 
-def run_pipeline(config_path: str | None = None) -> dict:
+def run_pipeline(config_path: str | None = None, delete_last_file: bool = False) -> dict:
     """Build dependencies from config and execute one run."""
 
     effective_config_path = Path(config_path) if config_path else DEFAULT_CONFIG_PATH
@@ -105,8 +150,10 @@ def run_pipeline(config_path: str | None = None) -> dict:
     for line in _build_runtime_log_lines(config):
         print(line)
 
-    source = _build_source(config)
     cache = SQLiteCache(config.runtime.db_path)
+    _cleanup_last_digest_file(cache=cache, delete_last_file=delete_last_file)
+
+    source = _build_source(config)
     ranker = RelevanceRanker(
         research_field=config.query.research_field,
         include_keywords=config.query.include_keywords,
@@ -152,22 +199,12 @@ def run_pipeline(config_path: str | None = None) -> dict:
 def main() -> None:
     """CLI main function."""
 
-    parser = argparse.ArgumentParser(description="Generate daily arXiv paper summary")
-    parser.add_argument(
-        "--config",
-        type=str,
-        default=None,
-        help="Path to config json. Default: config/default_config.json",
-    )
+    parser = _build_arg_parser()
     args = parser.parse_args()
 
-    result = run_pipeline(config_path=args.config)
+    result = run_pipeline(config_path=args.config, delete_last_file=args.delete_last_file)
     if result["generated"]:
         print(f"Generated digest: {result['summary_count']} papers -> {result['output_path']}")
     else:
         reason = result.get("skipped_reason") or "No output"
         print(f"No digest generated: {reason}")
-
-
-if __name__ == "__main__":
-    main()

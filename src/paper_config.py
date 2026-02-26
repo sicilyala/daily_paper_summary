@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from pathlib import Path
 
 
@@ -31,6 +32,8 @@ class RuntimeConfig:
     max_results: int = 200
     min_interval_hours: int = 48
     model_name: str = "glm-4.7"
+    start_year: int = 2023
+    end_year: int = field(default_factory=lambda: datetime.now(timezone.utc).year)
 
 
 @dataclass(slots=True)
@@ -100,6 +103,8 @@ def load_config(path: str | Path | None = None) -> AppConfig:
         max_results=int(runtime_data.get("max_results", 200)),
         min_interval_hours=int(runtime_data.get("min_interval_hours", 48)),
         model_name=runtime_data.get("model_name", "glm-4.7"),
+        start_year=int(runtime_data.get("start_year", 2023)),
+        end_year=int(runtime_data.get("end_year", datetime.now(timezone.utc).year)),
     )
 
     prompt_data = data.get("prompts", {})
