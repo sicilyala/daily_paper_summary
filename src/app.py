@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -62,24 +63,70 @@ def _build_runtime_log_lines(config) -> list[str]:
 
 
 def _cleanup_last_digest_file(cache: SQLiteCache, delete_last_file: bool) -> None:
-    """Optionally delete the last digest markdown and clear its digest record."""
+    """Backward-compatible wrapper for cleanup logic."""
+
+    _cleanup_previous_run_data(
+        cache=cache,
+        delete_last_file=delete_last_file,
+        markdown_output_dir="newspaper/markdown",
+        output_pdf=False,
+        pdf_output_dir="newspaper/pdf",
+    )
+
+
+def _is_within_workspace(path: Path) -> bool:
+    resolved_path = path.resolve()
+    allowed_roots = [
+        Path.cwd().resolve(),
+        Path(tempfile.gettempdir()).resolve(),
+        Path("/tmp").resolve(),
+        Path("/private/tmp").resolve(),
+    ]
+    for root in allowed_roots:
+        try:
+            resolved_path.relative_to(root)
+            return True
+        except ValueError:
+            continue
+    return False
+
+
+def _delete_digest_outputs(output_dir: str, pattern: str) -> int:
+    output_path = Path(output_dir)
+    if not _is_within_workspace(output_path):
+        print(f"[STEP] Skip deleting outputs outside workspace: {output_path}")
+        return 0
+    if not output_path.exists():
+        return 0
+
+    deleted = 0
+    for file_path in output_path.glob(pattern):
+        if file_path.is_file():
+            file_path.unlink()
+            deleted += 1
+    return deleted
+
+
+def _cleanup_previous_run_data(
+    cache: SQLiteCache,
+    delete_last_file: bool,
+    markdown_output_dir: str,
+    output_pdf: bool,
+    pdf_output_dir: str,
+) -> None:
+    """Delete old outputs and cache records to force a fresh end-to-end run."""
 
     if not delete_last_file:
         return
 
-    print("[STEP] deleteLastFile enabled: cleaning up last digest output and gate record")
+    print("[STEP] deleteLastFile enabled: cleaning up previous outputs and cache history")
     cache.init_db()
-    last_output_path = cache.delete_last_digest()
-    if not last_output_path:
-        print("[STEP] No historical digest found for cleanup")
-        return
-
-    output_path = Path(last_output_path)
-    if output_path.exists():
-        output_path.unlink()
-        print(f"[STEP] Deleted last digest markdown: {output_path}")
-    else:
-        print(f"[STEP] Last digest markdown not found on disk: {output_path}")
+    cache.clear_history()
+    deleted_md = _delete_digest_outputs(markdown_output_dir, "*_papers.md")
+    print(f"[STEP] Deleted markdown digests: {deleted_md}")
+    if output_pdf:
+        deleted_pdf = _delete_digest_outputs(pdf_output_dir, "*_papers.pdf")
+        print(f"[STEP] Deleted pdf digests: {deleted_pdf}")
 
 
 def _build_source(config) -> SourceInterface:
@@ -151,7 +198,13 @@ def run_pipeline(config_path: str | None = None, delete_last_file: bool = False)
         print(line)
 
     cache = SQLiteCache(config.runtime.db_path)
-    _cleanup_last_digest_file(cache=cache, delete_last_file=delete_last_file)
+    _cleanup_previous_run_data(
+        cache=cache,
+        delete_last_file=delete_last_file,
+        markdown_output_dir=config.runtime.markdown_output_dir,
+        output_pdf=config.runtime.output_pdf,
+        pdf_output_dir=config.runtime.pdf_output_dir,
+    )
 
     source = _build_source(config)
     ranker = RelevanceRanker(

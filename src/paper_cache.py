@@ -85,6 +85,14 @@ class SQLiteCache:
         title_norms = {row["title_norm"] for row in rows}
         return external_ids, title_norms
 
+    def clear_history(self) -> None:
+        """Clear cached papers and digest history for a fresh run."""
+
+        with self._connect() as conn:
+            conn.execute("DELETE FROM digest_items")
+            conn.execute("DELETE FROM digests")
+            conn.execute("DELETE FROM papers")
+
     def delete_last_digest(self) -> str | None:
         """Delete latest digest row (and items) and return its output path."""
 
