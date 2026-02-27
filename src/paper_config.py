@@ -41,7 +41,26 @@ class PromptConfig:
     """Prompt templates for LLM processing."""
 
     ranker_system: str = "You are an academic paper relevance scorer. Return strict JSON only."
+    ranker_user_template: str = (
+        "Research field:\n"
+        "{research_field}\n\n"
+        "Include keywords:\n"
+        "{include_keywords}\n\n"
+        "Exclude keywords:\n"
+        "{exclude_keywords}\n\n"
+        "Score each paper from 0-100 and return JSON with key 'items', each item has "
+        "external_id, relevance_score, relevance_reason."
+        "\nCandidates JSON:\n"
+        "{candidates_json}"
+    )
     summarizer_system: str = "You are an academic summarizer. Return strict JSON only in English."
+    summarizer_user_template: str = (
+        "Read this paper and summarize it in English and return JSON only with keys: "
+        "title, authors, affiliations, code_urls, problem, approach, "
+        "methodological_novelty, empirical_novelty, tell_someone_in_4_5_sentences.\n\n"
+        "Paper JSON:\n"
+        "{paper_json}"
+    )
 
 
 @dataclass(slots=True)
@@ -113,9 +132,17 @@ def load_config(path: str | Path | None = None) -> AppConfig:
             "ranker_system",
             "You are an academic paper relevance scorer. Return strict JSON only.",
         ),
+        ranker_user_template=prompt_data.get(
+            "ranker_user_template",
+            PromptConfig.ranker_user_template,
+        ),
         summarizer_system=prompt_data.get(
             "summarizer_system",
             "You are an academic summarizer. Return strict JSON only in English.",
+        ),
+        summarizer_user_template=prompt_data.get(
+            "summarizer_user_template",
+            PromptConfig.summarizer_user_template,
         ),
     )
 

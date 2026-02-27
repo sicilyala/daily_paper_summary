@@ -57,3 +57,25 @@ def test_ieee_year_bounds_loaded_from_config(tmp_path: Path) -> None:
 
     assert config.runtime.start_year == 2024
     assert config.runtime.end_year == 2025
+
+
+def test_prompt_templates_loaded_from_config(tmp_path: Path) -> None:
+    config_path = tmp_path / "config.json"
+    payload = {
+        "query": {"research_field": "Traffic engineering"},
+        "runtime": {},
+        "prompts": {
+            "ranker_system": "ranker-system",
+            "ranker_user_template": "ranker-user={research_field}",
+            "summarizer_system": "summarizer-system",
+            "summarizer_user_template": "summarizer-user={paper_json}",
+        },
+    }
+    config_path.write_text(json.dumps(payload), encoding="utf-8")
+
+    config = load_config(config_path)
+
+    assert config.prompts.ranker_system == "ranker-system"
+    assert config.prompts.ranker_user_template == "ranker-user={research_field}"
+    assert config.prompts.summarizer_system == "summarizer-system"
+    assert config.prompts.summarizer_user_template == "summarizer-user={paper_json}"

@@ -18,6 +18,7 @@ class RelevanceRanker:
         exclude_keywords: list[str],
         model_name: str,
         system_prompt: str,
+        user_prompt_template: str | None = None,
         llm_client: GLMClient | None = None,
     ):
         self.research_field = research_field
@@ -25,6 +26,18 @@ class RelevanceRanker:
         self.exclude_keywords = exclude_keywords
         self.model_name = model_name
         self.system_prompt = system_prompt
+        self.user_prompt_template = user_prompt_template or (
+            "Research field:\n"
+            "{research_field}\n\n"
+            "Include keywords:\n"
+            "{include_keywords}\n\n"
+            "Exclude keywords:\n"
+            "{exclude_keywords}\n\n"
+            "Score each paper from 0-100 and return JSON with key 'items', each item has "
+            "external_id, relevance_score, relevance_reason."
+            "\nCandidates JSON:\n"
+            "{candidates_json}"
+        )
         self.llm_client = llm_client or GLMClient()
 
     def rank(self, candidates: list[PaperCandidate]) -> list[tuple[PaperCandidate, float, str]]:
@@ -50,17 +63,11 @@ class RelevanceRanker:
             }
             for item in candidates
         ]
-        user_prompt = (
-            "Research field:\n"
-            f"{self.research_field}\n\n"
-            "Include keywords:\n"
-            f"{self.include_keywords}\n\n"
-            "Exclude keywords:\n"
-            f"{self.exclude_keywords}\n\n"
-            "Score each paper from 0-100 and return JSON with key 'items', each item has "
-            "external_id, relevance_score, relevance_reason."
-            "\nCandidates JSON:\n"
-            f"{json.dumps(payload, ensure_ascii=False)}"
+        user_prompt = self.user_prompt_template.format(
+            research_field=self.research_field,
+            include_keywords=self.include_keywords,
+            exclude_keywords=self.exclude_keywords,
+            candidates_json=json.dumps(payload, ensure_ascii=False),
         )
 
         try:

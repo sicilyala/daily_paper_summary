@@ -11,9 +11,22 @@ from models import PaperCandidate, PaperSummary
 class PaperSummarizer:
     """Build structured paper summaries."""
 
-    def __init__(self, model_name: str, system_prompt: str, llm_client: GLMClient | None = None):
+    def __init__(
+        self,
+        model_name: str,
+        system_prompt: str,
+        user_prompt_template: str | None = None,
+        llm_client: GLMClient | None = None,
+    ):
         self.model_name = model_name
         self.system_prompt = system_prompt
+        self.user_prompt_template = user_prompt_template or (
+            "Read this paper and summarize it in English and return JSON only with keys: "
+            "title, authors, affiliations, code_urls, problem, approach, "
+            "methodological_novelty, empirical_novelty, tell_someone_in_4_5_sentences.\n\n"
+            "Paper JSON:\n"
+            "{paper_json}"
+        )
         self.llm_client = llm_client or GLMClient()
 
     def summarize(
@@ -40,9 +53,7 @@ class PaperSummarizer:
                     approach=output.get("approach", ""),
                     methodological_novelty=output.get("methodological_novelty", ""),
                     empirical_novelty=output.get("empirical_novelty", ""),
-                    tell_someone_in_4_5_sentences=_normalize_talk_track(
-                        output.get("tell_someone_in_4_5_sentences", [])
-                    ),
+                    tell_someone_in_4_5_sentences=_normalize_talk_track(output.get("tell_someone_in_4_5_sentences", [])),
                     relevance_score=relevance_score,
                     relevance_reason=relevance_reason,
                 )
@@ -50,12 +61,7 @@ class PaperSummarizer:
         return self._fallback_summary(candidate, relevance_score, relevance_reason)
 
     def _summarize_with_llm(self, candidate: PaperCandidate) -> dict:
-        user_prompt = (
-            "Summarize this paper in English and return JSON only with keys: "
-            "title, authors, affiliations, code_urls, problem, approach, "
-            "methodological_novelty, empirical_novelty, tell_someone_in_4_5_sentences.\n\n"
-            f"Paper JSON:\n{json.dumps(_candidate_payload(candidate), ensure_ascii=False)}"
-        )
+        user_prompt = self.user_prompt_template.format(paper_json=json.dumps(_candidate_payload(candidate), ensure_ascii=False))
 
         try:
             return self.llm_client.chat_json(

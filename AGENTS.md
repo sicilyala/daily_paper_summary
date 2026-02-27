@@ -47,7 +47,7 @@ Act as a Senior Research Software Engineer. When generating `Python` code, stric
 
 - 严禁删除用户文件
 - 除非用户明确要求，否则禁止执行破坏性命令（rm -rf、覆盖输出文件、git push/pull）
-- 修改输入文件前必须创建备份
+- 修改数据(`.mat .csv .docx .json`等等)文件前必须创建备份，但是修改代码文件(`.py .R .md`等等)不需要备份。
 - **DO NOT EDIT OR DELETE ANY FILES OUTSIDE THIS REPO DIRECTORY**.
 - You may create and modify temporary files under `/tmp, /private/tmp` without asking for approval.
 - Do not write anywhere else outside the repository root unless the user explicitly approves.

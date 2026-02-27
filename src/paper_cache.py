@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import sqlite3
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 
@@ -92,6 +92,28 @@ class SQLiteCache:
             conn.execute("DELETE FROM digest_items")
             conn.execute("DELETE FROM digests")
             conn.execute("DELETE FROM papers")
+
+    def clear_history_for_date(self, target_date: date) -> None:
+        """Clear papers and digests created on the target date only."""
+
+        target_date_iso = target_date.isoformat()
+        with self._connect() as conn:
+            digest_rows = conn.execute(
+                "SELECT digest_id FROM digests WHERE substr(run_at, 1, 10) = ?",
+                (target_date_iso,),
+            ).fetchall()
+            digest_ids = [int(row["digest_id"]) for row in digest_rows]
+            if digest_ids:
+                placeholders = ",".join("?" for _ in digest_ids)
+                conn.execute(f"DELETE FROM digest_items WHERE digest_id IN ({placeholders})", digest_ids)
+            conn.execute(
+                "DELETE FROM digests WHERE substr(run_at, 1, 10) = ?",
+                (target_date_iso,),
+            )
+            conn.execute(
+                "DELETE FROM papers WHERE substr(first_seen_at, 1, 10) = ?",
+                (target_date_iso,),
+            )
 
     def delete_last_digest(self) -> str | None:
         """Delete latest digest row (and items) and return its output path."""

@@ -37,7 +37,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         "--deleteLastFile",
         dest="delete_last_file",
         action="store_true",  # store_true means it's a flag that defaults to False, and becomes True if specified
-        help="Delete last generated markdown file and clear latest digest record before running.",
+        help="Delete today's generated digest outputs and today's cache records before running.",
     )
     return parser
 
@@ -113,19 +113,23 @@ def _cleanup_previous_run_data(
     markdown_output_dir: str,
     output_pdf: bool,
     pdf_output_dir: str,
+    now: datetime | None = None,
 ) -> None:
-    """Delete old outputs and cache records to force a fresh end-to-end run."""
+    """Delete today's outputs and cache rows to allow same-day regeneration."""
 
     if not delete_last_file:
         return
 
-    print("[STEP] deleteLastFile enabled: cleaning up previous outputs and cache history")
+    now_utc = now.astimezone(timezone.utc) if now else datetime.now(timezone.utc)
+    today_str = now_utc.date().isoformat()
+    today_stem = f"{now_utc.strftime('%m%d')}_papers"
+    print(f"[STEP] deleteLastFile enabled: cleaning up outputs and cache for today ({today_str})")
     cache.init_db()
-    cache.clear_history()
-    deleted_md = _delete_digest_outputs(markdown_output_dir, "*_papers.md")
+    cache.clear_history_for_date(now_utc.date())
+    deleted_md = _delete_digest_outputs(markdown_output_dir, f"{today_stem}.md")
     print(f"[STEP] Deleted markdown digests: {deleted_md}")
     if output_pdf:
-        deleted_pdf = _delete_digest_outputs(pdf_output_dir, "*_papers.pdf")
+        deleted_pdf = _delete_digest_outputs(pdf_output_dir, f"{today_stem}.pdf")
         print(f"[STEP] Deleted pdf digests: {deleted_pdf}")
 
 
@@ -197,6 +201,7 @@ def run_pipeline(config_path: str | None = None, delete_last_file: bool = False)
     for line in _build_runtime_log_lines(config):
         print(line)
 
+    now_utc = datetime.now(timezone.utc)
     cache = SQLiteCache(config.runtime.db_path)
     _cleanup_previous_run_data(
         cache=cache,
@@ -204,6 +209,7 @@ def run_pipeline(config_path: str | None = None, delete_last_file: bool = False)
         markdown_output_dir=config.runtime.markdown_output_dir,
         output_pdf=config.runtime.output_pdf,
         pdf_output_dir=config.runtime.pdf_output_dir,
+        now=now_utc,
     )
 
     source = _build_source(config)
@@ -213,10 +219,12 @@ def run_pipeline(config_path: str | None = None, delete_last_file: bool = False)
         exclude_keywords=config.query.exclude_keywords,
         model_name=config.runtime.model_name,
         system_prompt=config.prompts.ranker_system,
+        user_prompt_template=config.prompts.ranker_user_template,
     )
     summarizer = PaperSummarizer(
         model_name=config.runtime.model_name,
         system_prompt=config.prompts.summarizer_system,
+        user_prompt_template=config.prompts.summarizer_user_template,
     )
     renderer = MarkdownRenderer()
     writer = MarkdownWriter(
@@ -239,7 +247,7 @@ def run_pipeline(config_path: str | None = None, delete_last_file: bool = False)
     )
 
     print("[STEP] Pipeline execution started")
-    result = pipeline.run(now=datetime.now(timezone.utc))
+    result = pipeline.run(now=now_utc)
     return {
         "generated": result.generated,
         "summary_count": result.summary_count,
