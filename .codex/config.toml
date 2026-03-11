@@ -1,0 +1,15 @@
+model = "gpt-5.4"
+model_reasoning_effort = "medium"
+# 在工作区内自动读写改文件、执行命令，不需要逐条审批
+# approval_policy = "on-request" ：只有当需要“离开沙箱/超出允许范围”等情况才会停下来要你批准
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+# workspace-write 默认不允许网络；要“联网也不审批”，必须显式开启
+[sandbox_workspace_write]
+network_access = true
+# 额外允许在这些目录内写入（目录外免审批写入的白名单）
+writable_roots = ["/tmp", "/private/tmp"]
+# 如果你曾经把 /tmp 或 $TMPDIR 排除过，确保不要排除
+exclude_slash_tmp = false
+exclude_tmpdir_env_var = false
