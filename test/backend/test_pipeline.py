@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 
-from models import PaperCandidate, PaperSummary
-from pipeline import DailyPaperPipeline
+from backend.models import PaperCandidate, PaperSummary
+from backend.pipeline import DailyPaperPipeline
 
 
 class FakeSource:

@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import date, datetime
 from typing import Protocol
 
-from models import PaperCandidate, PaperSummary
+from backend.models import PaperCandidate, PaperSummary
 
 
 class SourceInterface(Protocol):

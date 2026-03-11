@@ -1,6 +1,6 @@
 from typing import get_type_hints
 
-from pipeline import DailyPaperPipeline
+from backend.pipeline import DailyPaperPipeline
 
 
 def test_pipeline_uses_named_interface_types_instead_of_object() -> None:

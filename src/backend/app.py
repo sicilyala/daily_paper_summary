@@ -8,18 +8,18 @@ import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
-from arxiv_source import ArxivSource
-from interfaces import SourceInterface
-from ieee_source import IeeeXploreSource
-from multi_source import MultiSource
-from paper_cache import SQLiteCache
-from paper_config import DEFAULT_CONFIG_PATH, load_config
-from output_writer import MarkdownWriter
-from pipeline import DailyPaperPipeline
-from ranker import RelevanceRanker
-from renderer import MarkdownRenderer
-from scopus_source import ScopusSource
-from summarizer import PaperSummarizer
+from backend.arxiv_source import ArxivSource
+from backend.interfaces import SourceInterface
+from backend.ieee_source import IeeeXploreSource
+from backend.multi_source import MultiSource
+from backend.output_writer import MarkdownWriter
+from backend.paper_cache import SQLiteCache
+from backend.paper_config import DEFAULT_CONFIG_PATH, load_config
+from backend.pipeline import DailyPaperPipeline
+from backend.ranker import RelevanceRanker
+from backend.renderer import MarkdownRenderer
+from backend.scopus_source import ScopusSource
+from backend.summarizer import PaperSummarizer
 
 
 def _build_arg_parser() -> argparse.ArgumentParser:

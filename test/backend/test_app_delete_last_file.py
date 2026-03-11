@@ -1,8 +1,8 @@
 from datetime import date, datetime, timezone
 from pathlib import Path
 
-from app import _cleanup_previous_run_data
-from paper_cache import SQLiteCache
+from backend.app import _cleanup_previous_run_data
+from backend.paper_cache import SQLiteCache
 
 
 def _count_rows(cache: SQLiteCache, table: str) -> int:

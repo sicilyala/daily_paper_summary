@@ -1,8 +1,8 @@
 from datetime import datetime, timezone
 
 
-from models import PaperCandidate
-from normalize import deduplicate_candidates, normalize_title
+from backend.models import PaperCandidate
+from backend.normalize import deduplicate_candidates, normalize_title
 
 
 def make_candidate(arxiv_id: str, title: str) -> PaperCandidate:

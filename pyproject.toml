@@ -5,12 +5,16 @@ description = "arXiv-based daily paper summary generator"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "fastapi>=0.135.1",
+    "httpx>=0.28.1",
     "pytest>=9.0.2",
     "reportlab>=4.4.9",
+    "uvicorn>=0.41.0",
 ]
 
 [project.scripts]
-daily-paper-summary = "app:main"
+daily-paper-summary = "backend.app:main"
+daily-paper-summary-web = "backend.web_app:main"
 
 [build-system]
 requires = ["setuptools>=68", "wheel"]

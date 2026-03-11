@@ -2,7 +2,7 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from paper_config import load_config
+from backend.paper_config import load_config
 
 
 def _write_config(path: Path, runtime: dict) -> None:

@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from paper_cache import SQLiteCache
+from backend.paper_cache import SQLiteCache
 
 
 def test_should_run_respects_48h_gate(tmp_path) -> None:

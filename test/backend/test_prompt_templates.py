@@ -1,9 +1,9 @@
 import json
 from datetime import datetime, timezone
 
-from models import PaperCandidate
-from ranker import RelevanceRanker
-from summarizer import PaperSummarizer
+from backend.models import PaperCandidate
+from backend.ranker import RelevanceRanker
+from backend.summarizer import PaperSummarizer
 
 
 class CaptureLLM:

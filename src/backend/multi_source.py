@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from interfaces import SourceInterface
+from backend.interfaces import SourceInterface
 
 
 class MultiSource:

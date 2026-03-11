@@ -1,6 +1,6 @@
 from types import SimpleNamespace
 
-from app import _build_arg_parser, _build_runtime_log_lines
+from backend.app import _build_arg_parser, _build_runtime_log_lines
 
 
 def test_runtime_log_lines_use_actual_config_values() -> None:

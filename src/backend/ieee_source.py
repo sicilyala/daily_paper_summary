@@ -9,7 +9,7 @@ from urllib.parse import urlencode
 from urllib.error import URLError
 from urllib.request import urlopen
 
-from models import PaperCandidate
+from backend.models import PaperCandidate
 
 IEEE_API_URL = "https://ieeexploreapi.ieee.org/api/v1/search/articles"
 
@@ -67,7 +67,7 @@ class IeeeXploreSource:
 
         return collected[: self.max_results]
 
-    def _fetch_page(self, start_record: int, max_records: int | None = None) -> dict:
+    def _fetch_page(self, start_record: int, max_records: int | None = None):
         params = {
             "apikey": self.api_key,
             "format": "json",

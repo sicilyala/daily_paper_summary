@@ -1,7 +1,7 @@
 from datetime import date
 from pathlib import Path
 
-from output_writer import MarkdownWriter, _parse_markdown_blocks
+from backend.output_writer import MarkdownWriter, _parse_markdown_blocks
 
 
 def test_markdown_writer_outputs_markdown_and_pdf(tmp_path: Path) -> None:

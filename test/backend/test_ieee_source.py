@@ -2,8 +2,8 @@ import json
 from datetime import datetime, timezone
 from urllib.parse import parse_qs, urlparse
 
-import ieee_source
-from ieee_source import IeeeXploreSource
+import backend.ieee_source as ieee_source
+from backend.ieee_source import IeeeXploreSource
 
 
 class _FakeResponse:

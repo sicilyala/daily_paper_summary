@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import json
 
-from llm import GLMClient
-from models import PaperCandidate, PaperSummary
+from backend.llm import GLMClient
+from backend.models import PaperCandidate, PaperSummary
 
 
 class PaperSummarizer:

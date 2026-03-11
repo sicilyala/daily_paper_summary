@@ -1,7 +1,7 @@
 import os
 from types import SimpleNamespace
 
-from app import _build_source
+from backend.app import _build_source
 
 
 class DummyRuntime(SimpleNamespace):

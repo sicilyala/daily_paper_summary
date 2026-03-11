@@ -7,8 +7,8 @@ from urllib.parse import quote
 from urllib.request import urlopen
 import xml.etree.ElementTree as ET
 
-from models import PaperCandidate
-from utils import extract_code_urls
+from backend.models import PaperCandidate
+from backend.utils import extract_code_urls
 
 ARXIV_API_URL = "http://export.arxiv.org/api/query"
 ATOM_NS = {"atom": "http://www.w3.org/2005/Atom", "arxiv": "http://arxiv.org/schemas/atom"}

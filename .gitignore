@@ -12,3 +12,5 @@ wheels/
 
 cache
 .pytest_cache
+
+docs/launchd

@@ -7,7 +7,7 @@ from datetime import datetime, timedelta, timezone
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
-from models import PaperCandidate
+from backend.models import PaperCandidate
 
 SCOPUS_SEARCH_URL = "https://api.elsevier.com/content/search/scopus"
 

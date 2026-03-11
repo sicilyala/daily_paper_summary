@@ -6,7 +6,7 @@ import json
 from dataclasses import dataclass
 from datetime import datetime, timezone
 
-from interfaces import (
+from backend.interfaces import (
     CacheInterface,
     RankerInterface,
     RendererInterface,
@@ -14,8 +14,8 @@ from interfaces import (
     SummarizerInterface,
     WriterInterface,
 )
-from models import PipelineRunResult
-from normalize import deduplicate_candidates, normalize_title
+from backend.models import PipelineRunResult
+from backend.normalize import deduplicate_candidates, normalize_title
 
 
 @dataclass(slots=True)

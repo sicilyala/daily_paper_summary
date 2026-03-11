@@ -1,4 +1,4 @@
-from src.app import main
+from backend.app import main
 
 
 if __name__ == "__main__":

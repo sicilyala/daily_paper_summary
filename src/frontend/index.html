@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daily Paper Summary</title>
+    <link rel="stylesheet" href="/assets/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <p class="eyebrow">Research Briefing Console</p>
+        <h1>Daily Paper Summary</h1>
+        <p class="hero-copy">
+          用浏览器直接触发论文情报流水线，等待后端完成抓取、排序与总结，并在页面里查看最新简报。
+        </p>
+      </header>
+
+      <main class="layout">
+        <section class="control-panel">
+          <div class="panel-header">
+            <p class="panel-kicker">Run Control</p>
+            <h2>启动一次新简报</h2>
+          </div>
+
+          <label class="toggle">
+            <input id="delete-last-file" type="checkbox" />
+            <span>清理当天已有输出后重新生成</span>
+          </label>
+
+          <button id="start-run" class="start-button" type="button">开始生成</button>
+
+          <dl class="status-grid">
+            <div>
+              <dt>任务编号</dt>
+              <dd id="job-id">未启动</dd>
+            </div>
+            <div>
+              <dt>当前状态</dt>
+              <dd id="job-status">空闲</dd>
+            </div>
+            <div>
+              <dt>结果摘要</dt>
+              <dd id="job-result">等待运行</dd>
+            </div>
+          </dl>
+        </section>
+
+        <section class="newspaper-panel">
+          <div class="panel-header">
+            <p class="panel-kicker">Latest Newspaper</p>
+            <h2>浏览器内查看最新简报</h2>
+          </div>
+
+          <p id="newspaper-meta" class="newspaper-meta">正在读取当前简报...</p>
+          <article id="newspaper-content" class="newspaper-content">
+            <p class="placeholder">尚未生成简报。点击左侧按钮开始执行。</p>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script src="/assets/app.js" defer></script>
+  </body>
+</html>
