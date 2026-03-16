@@ -14,7 +14,7 @@ dependencies = [
 
 [project.scripts]
 daily-paper-summary = "backend.app:main"
-daily-paper-summary-web = "backend.web_app:main"
+daily-paper-summary-web = "backend.web.app:main"
 
 [build-system]
 requires = ["setuptools>=68", "wheel"]

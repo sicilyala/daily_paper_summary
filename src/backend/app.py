@@ -5,25 +5,27 @@ from __future__ import annotations
 import argparse
 import os
 import tempfile
+from collections.abc import Sequence
 from datetime import datetime, timezone
 from pathlib import Path
 
-from backend.arxiv_source import ArxivSource
-from backend.interfaces import SourceInterface
-from backend.ieee_source import IeeeXploreSource
-from backend.multi_source import MultiSource
-from backend.output_writer import MarkdownWriter
-from backend.paper_cache import SQLiteCache
-from backend.paper_config import DEFAULT_CONFIG_PATH, load_config
-from backend.pipeline import DailyPaperPipeline
-from backend.ranker import RelevanceRanker
-from backend.renderer import MarkdownRenderer
-from backend.scopus_source import ScopusSource
-from backend.summarizer import PaperSummarizer
+from backend.common.protocols import SourceInterface
+from backend.config.paper_config import DEFAULT_CONFIG_PATH, load_config
+from backend.paper_process.pipeline import DailyPaperPipeline
+from backend.paper_process.paper_cache import SQLiteCache
+from backend.paper_process.renderer import MarkdownRenderer
+from backend.paper_process.ranker import RelevanceRanker
+from backend.paper_process.writer import MarkdownWriter
+from backend.paper_process.summarizer import PaperSummarizer
+from backend.sources.arxiv import ArxivSource
+from backend.sources.ieee import IeeeXploreSource
+from backend.sources.multi import MultiSource
+from backend.sources.scopus import ScopusSource
+from backend.sources.ssrn import SsrnSource
 
 
-def _build_arg_parser() -> argparse.ArgumentParser:
-    """Build CLI argument parser."""
+def _build_arg_parser(argv: Sequence[str] | None = None) -> argparse.Namespace:
+    """Build CLI arguments and return parsed values."""
 
     parser = argparse.ArgumentParser(description="Generate daily arXiv paper summary")
     parser.add_argument(
@@ -39,7 +41,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
         action="store_true",  # store_true means it's a flag that defaults to False, and becomes True if specified
         help="Delete today's generated digest outputs and today's cache records before running.",
     )
-    return parser
+    return parser.parse_args(argv)
 
 
 def _build_runtime_log_lines(config) -> list[str]:
@@ -185,6 +187,21 @@ def _build_source(config) -> SourceInterface:
         else:
             print("[STEP] Skip source ieee_xplore: IEEE_API_KEY is not set")
 
+    if "ssrn" in enabled_sources:
+        sources.append(
+            SsrnSource(
+                research_field=query.research_field,
+                include_keywords=query.include_keywords,
+                exclude_keywords=query.exclude_keywords,
+                max_results=runtime.max_results,
+                window_days=runtime.window_days,
+                ssrn_backend=getattr(runtime, "ssrn_backend", "html"),
+                request_pause_seconds=getattr(runtime, "ssrn_request_pause_seconds", 1.5),
+                timeout_seconds=getattr(runtime, "ssrn_timeout_seconds", 30),
+                feed_url=getattr(runtime, "ssrn_feed_url", "") or None,
+            )
+        )
+
     if not sources:
         raise RuntimeError("No enabled source is available. Check enabled_sources and API keys.")
     if len(sources) == 1:
@@ -260,8 +277,7 @@ def run_pipeline(config_path: str | None = None, delete_last_file: bool = False)
 def main() -> None:
     """CLI main function."""
 
-    parser = _build_arg_parser()
-    args = parser.parse_args()
+    args = _build_arg_parser()
 
     result = run_pipeline(config_path=args.config, delete_last_file=args.delete_last_file)
     if result["generated"]:

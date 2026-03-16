@@ -23,7 +23,8 @@
     "enabled_sources": [
       "arxiv",
       "scopus",
-      "ieee_xplore"
+      "ieee_xplore",
+      "ssrn"
     ],
     "OUTPUT_PDF": false,
     "markdown_output_dir": "newspaper/markdown",
@@ -34,7 +35,13 @@
     "start_year": 2023,
     "max_results": 300,
     "min_interval_hours": 48,
-    "model_name": "glm-4.7"
+    "model_name": "glm-4.7",
+    "ssrn": {
+      "backend": "html",
+      "request_pause_seconds": 1.5,
+      "timeout_seconds": 30,
+      "feed_url": ""
+    }
   },
   "prompts": {
     "ranker_system": "You are an expert reviewer in transportation engineering, reinforcement learning, and AI. Score paper relevance with strict JSON only.",

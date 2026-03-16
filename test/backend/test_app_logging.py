@@ -31,9 +31,7 @@ def test_runtime_log_lines_use_actual_config_values() -> None:
 
 
 def test_arg_parser_supports_delete_last_file_flag() -> None:
-    parser = _build_arg_parser()
-
-    args = parser.parse_args(["--config", "config/default_config.json", "--deleteLastFile"])
+    args = _build_arg_parser(["--config", "config/default_config.json", "--deleteLastFile"])
 
     assert args.config == "config/default_config.json"
     assert args.delete_last_file is True

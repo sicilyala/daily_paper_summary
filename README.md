@@ -2,7 +2,7 @@
 
 一个用于论文情报跟踪的 Python 工具，现在同时支持终端模式和浏览器模式：
 
-- 从 arXiv/IEEE/Scopus 检索近期论文
+- 从 arXiv/IEEE/Scopus/SSRN 检索近期论文
 - 基于关键词和领域描述做相关性排序
 - 输出 Top-K 论文英文简报到 `newspaper/markdown/MMDD_papers.md`
 - 使用 SQLite 缓存去重与历史追踪（默认 `cache/cache.sqlite3`）
@@ -23,7 +23,7 @@ daily_paper_summary/
     └── backend/         # 与 src/backend 对应的后端测试
 ```
 
-## 2. Linux 部署
+## 2. 部署
 
 ```bash
 # 进入项目目录
@@ -54,36 +54,28 @@ echo 'export SCOPUS_API_KEY="<YOUR_SCOPUS_API_KEY>"' >> ~/.zshrc
 source ~/.zshrc
 ```
 
-## 4. 终端模式
+## 4. Quick Run
 
 ```bash
 cd /path/to/daily_paper_summary
+uv sync 
+
+# Terminal mode 
 source .venv/bin/activate && python main.py --config config/default_config.json --deleteLastFile
-```
 
-## 5. 浏览器模式
-
-```bash
-cd /path/to/daily_paper_summary
-source .venv/bin/activate && python -m uvicorn backend.web_app:app --host 127.0.0.1 --port 8000
-
-# or run this on remote 
-ssh -L 8000:127.0.0.1:8000 weiqihk@hkpc 'cd /home/weiqihk/Opencode/daily_paper_summary && source .venv/bin/activate && python -m uvicorn backend.web_app:app --host 127.0.0.1 --port 8000'
-```
-
-Then open the browser and navigate to:
-
-```text
+# Web mode 
+source .venv/bin/activate && python -m uvicorn backend.web.app:app --host 127.0.0.1 --port 8000
+## Then open the browser and navigate to:
 http://127.0.0.1:8000
 ```
 
-The page includes:
+The web page includes:
 
 - `开始生成` 按钮：触发一次新的摘要任务
 - `清理当天已有输出后重新生成` 选项：对应原来的 `--delete-last-file`
 - 最新简报展示区：直接在浏览器查看 `newspaper`
 
-## 6. 输出位置
+## 5. 输出位置
 
 ```bash
 # 简报文件
@@ -93,12 +85,19 @@ ls -lh newspaper/
 ls -lh cache/cache.sqlite3
 ```
 
-## 7. 运行测试
+## 6. 运行测试
 
 ```bash
 cd /path/to/daily_paper_summary
 source .venv/bin/activate && pytest -q
 ```
+
+## 7. SSRN 可选源
+
+- 在 `runtime.enabled_sources` 中加入 `"ssrn"` 即可启用 SSRN。
+- `runtime.ssrn_backend = "html"` 会使用当前已实现的 HTML fallback。
+- `runtime.ssrn_backend = "feed"` 预留给未来官方 feed/API 接入，当前会明确报错提示未实现。
+- SSRN fallback 模式应按低频、手动触发使用，不应配置成高频自动抓取。
 
 ## 8. Linux 定时任务（cron，每天 09:00 触发）
 

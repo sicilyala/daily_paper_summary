@@ -1,0 +1,160 @@
+"""Configuration loading for daily paper summary."""
+
+from __future__ import annotations
+
+import json
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from pathlib import Path
+
+
+@dataclass(slots=True)
+class QueryConfig:
+    """Search and relevance configuration."""
+
+    research_field: str
+    include_keywords: list[str] = field(default_factory=list)
+    exclude_keywords: list[str] = field(default_factory=list)
+    categories: list[str] = field(default_factory=lambda: ["cs.AI", "cs.LG", "stat.ML"])
+
+
+@dataclass(slots=True)
+class RuntimeConfig:
+    """Runtime behavior configuration."""
+
+    enabled_sources: list[str] = field(default_factory=lambda: ["arxiv"])
+    markdown_output_dir: str = "newspaper/markdown"
+    pdf_output_dir: str = "newspaper/pdf"
+    output_pdf: bool = False
+    db_path: str = "newspaper/cache.sqlite3"
+    top_k: int = 10
+    window_days: int = 7
+    max_results: int = 200
+    min_interval_hours: int = 48
+    model_name: str = "glm-4.7"
+    start_year: int = 2023
+    end_year: int = field(default_factory=lambda: datetime.now(timezone.utc).year)
+    ssrn_backend: str = "html"
+    ssrn_request_pause_seconds: float = 1.5
+    ssrn_timeout_seconds: int = 30
+    ssrn_feed_url: str = ""
+
+
+@dataclass(slots=True)
+class PromptConfig:
+    """Prompt templates for LLM processing."""
+
+    ranker_system: str = "You are an academic paper relevance scorer. Return strict JSON only."
+    ranker_user_template: str = (
+        "Research field:\n"
+        "{research_field}\n\n"
+        "Include keywords:\n"
+        "{include_keywords}\n\n"
+        "Exclude keywords:\n"
+        "{exclude_keywords}\n\n"
+        "Score each paper from 0-100 and return JSON with key 'items', each item has "
+        "external_id, relevance_score, relevance_reason."
+        "\nCandidates JSON:\n"
+        "{candidates_json}"
+    )
+    summarizer_system: str = "You are an academic summarizer. Return strict JSON only in English."
+    summarizer_user_template: str = (
+        "Read this paper and summarize it in English and return JSON only with keys: "
+        "title, authors, affiliations, code_urls, problem, approach, "
+        "methodological_novelty, empirical_novelty, tell_someone_in_4_5_sentences.\n\n"
+        "Paper JSON:\n"
+        "{paper_json}"
+    )
+
+
+@dataclass(slots=True)
+class AppConfig:
+    """Application configuration object."""
+
+    query: QueryConfig
+    runtime: RuntimeConfig = field(default_factory=RuntimeConfig)
+    prompts: PromptConfig = field(default_factory=PromptConfig)
+
+
+DEFAULT_CONFIG_PATH = Path("config/default_config.json")
+
+
+def load_config(path: str | Path | None = None) -> AppConfig:
+    """Load configuration from JSON file.
+
+    Args:
+        path: Custom config path. If omitted, uses default config.
+
+    Returns:
+        Parsed AppConfig object.
+
+    Raises:
+        FileNotFoundError: If config file does not exist.
+        ValueError: If required fields are missing.
+    """
+
+    config_path = Path(path) if path else DEFAULT_CONFIG_PATH
+    if not config_path.exists():
+        raise FileNotFoundError(f"Config not found: {config_path}")
+
+    data = json.loads(config_path.read_text(encoding="utf-8"))
+    if "query" not in data or "research_field" not in data["query"]:
+        raise ValueError("Config must contain query.research_field")
+
+    query = QueryConfig(
+        research_field=data["query"]["research_field"],
+        include_keywords=list(data["query"].get("include_keywords", [])),
+        exclude_keywords=list(data["query"].get("exclude_keywords", [])),
+        categories=list(data["query"].get("categories", ["cs.AI", "cs.LG", "stat.ML"])),
+    )
+
+    runtime_data = data.get("runtime", {})
+    ssrn_data = runtime_data.get("ssrn", {})
+    runtime = RuntimeConfig(
+        enabled_sources=list(runtime_data.get("enabled_sources", ["arxiv"])),
+        markdown_output_dir=runtime_data.get(
+            "markdown_output_dir",
+            "newspaper/markdown",
+        ),
+        pdf_output_dir=runtime_data.get(
+            "pdf_output_dir",
+            "newspaper/pdf",
+        ),
+        output_pdf=bool(runtime_data.get("OUTPUT_PDF", runtime_data.get("output_pdf", False))),
+        db_path=runtime_data.get("db_path", "newspaper/cache.sqlite3"),
+        top_k=int(runtime_data.get("top_k", 10)),
+        window_days=int(runtime_data.get("window_days", 7)),
+        max_results=int(runtime_data.get("max_results", 200)),
+        min_interval_hours=int(runtime_data.get("min_interval_hours", 48)),
+        model_name=runtime_data.get("model_name", "glm-4.7"),
+        start_year=int(runtime_data.get("start_year", 2023)),
+        end_year=int(runtime_data.get("end_year", datetime.now(timezone.utc).year)),
+        ssrn_backend=ssrn_data.get("backend", runtime_data.get("ssrn_backend", "html")),
+        ssrn_request_pause_seconds=float(
+            ssrn_data.get("request_pause_seconds", runtime_data.get("ssrn_request_pause_seconds", 1.5))
+        ),
+        ssrn_timeout_seconds=int(ssrn_data.get("timeout_seconds", runtime_data.get("ssrn_timeout_seconds", 30))),
+        ssrn_feed_url=ssrn_data.get("feed_url", runtime_data.get("ssrn_feed_url", "")),
+    )
+
+    prompt_data = data.get("prompts", {})
+    prompts = PromptConfig(
+        ranker_system=prompt_data.get(
+            "ranker_system",
+            "You are an academic paper relevance scorer. Return strict JSON only.",
+        ),
+        ranker_user_template=prompt_data.get(
+            "ranker_user_template",
+            PromptConfig.ranker_user_template,
+        ),
+        summarizer_system=prompt_data.get(
+            "summarizer_system",
+            "You are an academic summarizer. Return strict JSON only in English.",
+        ),
+        summarizer_user_template=prompt_data.get(
+            "summarizer_user_template",
+            PromptConfig.summarizer_user_template,
+        ),
+    )
+
+    return AppConfig(query=query, runtime=runtime, prompts=prompts)
