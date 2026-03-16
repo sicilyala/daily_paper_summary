@@ -1,6 +1,6 @@
 # AGENT.md
 
-I am a PHD student majoring in traffic engineering and AI, I want to develop such a tool：给定研究领域和关键词，帮我在arxiv, scopus, ieee xplore等平台搜索最新的论文，自行判定相关性并做排序，然后总结最相关的10篇论文形成简报发给我并保存在本地文件夹；我会给出简报的内容格式要求。
+I am a PHD student majoring in traffic engineering and AI, I want to develop such a tool：给定研究领域和关键词，帮我在arxiv, scopus, ieee xplore, SSRN等平台搜索最新的论文，自行判定相关性并做排序，然后总结最相关的论文形成简报发给我并保存在本地文件夹；我会给出简报的内容格式要求。
 
 ## Role & Objectives
 
@@ -67,12 +67,3 @@ uv sync
 uv add <package_name>
 
 ```
-
-## File Structure
-
-- `config`: Configuration files for different components.
-- `src/`: Source code files.
-- `test/`: Test files corresponding to source code.
-- `docs/`: Documentation files.
-- `AGENTS.md`: Agent configuration and instructions.
-- `newspaper`: The output folder for generated newspapers.

@@ -110,6 +110,24 @@ def test_default_config_includes_ssrn_html_backend() -> None:
     assert config.runtime.ssrn_timeout_seconds == 30
 
 
+def test_require_llm_defaults_to_false(tmp_path: Path) -> None:
+    config_path = tmp_path / "config.json"
+    _write_config(config_path, runtime={})
+
+    config = load_config(config_path)
+
+    assert config.runtime.require_llm is False
+
+
+def test_require_llm_loaded_from_config(tmp_path: Path) -> None:
+    config_path = tmp_path / "config.json"
+    _write_config(config_path, runtime={"require_llm": True})
+
+    config = load_config(config_path)
+
+    assert config.runtime.require_llm is True
+
+
 def test_prompt_templates_loaded_from_config(tmp_path: Path) -> None:
     config_path = tmp_path / "config.json"
     payload = {

@@ -43,12 +43,14 @@ uv sync
 
 ```bash
 # 临时生效（当前终端）
-export GLM_API_KEY="<YOUR_GLM_API_KEY>"
+export AI_MODEL_API_KEY="<YOUR_AI_MODEL_API_KEY>"
+export AI_MODEL_URL="<YOUR_AI_MODEL_API_ENDPOINT>"   
 export IEEE_API_KEY="<YOUR_IEEE_API_KEY>"
 export SCOPUS_API_KEY="<YOUR_SCOPUS_API_KEY>"
 
-# 持久化到 zsh
-echo 'export GLM_API_KEY="<YOUR_GLM_API_KEY>"' >> ~/.zshrc
+# 持久化到 .zshrc/.bashrc (on Mac/Linux)
+echo 'export AI_MODEL_API_KEY="<YOUR_AI_MODEL_API_KEY>"' >> ~/.zshrc
+echo 'export AI_MODEL_URL="<YOUR_AI_MODEL_API_ENDPOINT>"' >> ~/.zshrc
 echo 'export IEEE_API_KEY="<YOUR_IEEE_API_KEY>"' >> ~/.zshrc
 echo 'export SCOPUS_API_KEY="<YOUR_SCOPUS_API_KEY>"' >> ~/.zshrc
 source ~/.zshrc

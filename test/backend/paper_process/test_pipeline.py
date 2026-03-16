@@ -107,7 +107,45 @@ def test_pipeline_runs_end_to_end():
     assert pipeline.cache.recorded is True
 
 
-def test_pipeline_returns_fetch_failure_reason():
+def test_pipeline_fails_early_when_require_llm_and_llm_disabled():
+    pipeline = DailyPaperPipeline(
+        source=FakeSource(),
+        ranker=FakeRanker(),
+        summarizer=FakeSummarizer(),
+        cache=FakeCache(),
+        renderer=FakeRenderer(),
+        writer=FakeWriter(),
+        top_k=10,
+        min_interval_hours=48,
+        require_llm=True,
+        llm_enabled=False,
+    )
+
+    result = pipeline.run(now=datetime(2026, 2, 6, tzinfo=timezone.utc))
+
+    assert result.generated is False
+    assert result.summary_count == 0
+    assert result.output_path is None
+    assert "AI_MODEL" in result.skipped_reason
+
+
+def test_pipeline_runs_normally_when_require_llm_false_and_llm_disabled():
+    pipeline = DailyPaperPipeline(
+        source=FakeSource(),
+        ranker=FakeRanker(),
+        summarizer=FakeSummarizer(),
+        cache=FakeCache(),
+        renderer=FakeRenderer(),
+        writer=FakeWriter(),
+        top_k=10,
+        min_interval_hours=48,
+        require_llm=False,
+        llm_enabled=False,
+    )
+
+    result = pipeline.run(now=datetime(2026, 2, 6, tzinfo=timezone.utc))
+
+    assert result.generated is True
     pipeline = DailyPaperPipeline(
         source=BrokenSource(),
         ranker=FakeRanker(),

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 
-from backend.models.glm_client import GLMClient
+from backend.models.ai_model_client import AIModelClient
 from backend.paper_process.paper import PaperCandidate, PaperSummary
 
 
@@ -16,7 +16,7 @@ class PaperSummarizer:
         model_name: str,
         system_prompt: str,
         user_prompt_template: str | None = None,
-        llm_client: GLMClient | None = None,
+        llm_client: AIModelClient | None = None,
     ):
         self.model_name = model_name
         self.system_prompt = system_prompt
@@ -27,7 +27,7 @@ class PaperSummarizer:
             "Paper JSON:\n"
             "{paper_json}"
         )
-        self.llm_client = llm_client or GLMClient()
+        self.llm_client = llm_client or AIModelClient()
 
     def summarize(
         self,

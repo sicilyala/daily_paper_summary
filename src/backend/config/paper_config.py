@@ -31,13 +31,14 @@ class RuntimeConfig:
     window_days: int = 7
     max_results: int = 200
     min_interval_hours: int = 48
-    model_name: str = "glm-4.7"
+    model_name: str = "sonnet-4.6"
     start_year: int = 2023
     end_year: int = field(default_factory=lambda: datetime.now(timezone.utc).year)
     ssrn_backend: str = "html"
     ssrn_request_pause_seconds: float = 1.5
     ssrn_timeout_seconds: int = 30
     ssrn_feed_url: str = ""
+    require_llm: bool = False
 
 
 @dataclass(slots=True)
@@ -126,7 +127,7 @@ def load_config(path: str | Path | None = None) -> AppConfig:
         window_days=int(runtime_data.get("window_days", 7)),
         max_results=int(runtime_data.get("max_results", 200)),
         min_interval_hours=int(runtime_data.get("min_interval_hours", 48)),
-        model_name=runtime_data.get("model_name", "glm-4.7"),
+        model_name=runtime_data.get("model_name", "sonnet-4.6"),
         start_year=int(runtime_data.get("start_year", 2023)),
         end_year=int(runtime_data.get("end_year", datetime.now(timezone.utc).year)),
         ssrn_backend=ssrn_data.get("backend", runtime_data.get("ssrn_backend", "html")),
@@ -135,6 +136,7 @@ def load_config(path: str | Path | None = None) -> AppConfig:
         ),
         ssrn_timeout_seconds=int(ssrn_data.get("timeout_seconds", runtime_data.get("ssrn_timeout_seconds", 30))),
         ssrn_feed_url=ssrn_data.get("feed_url", runtime_data.get("ssrn_feed_url", "")),
+        require_llm=bool(runtime_data.get("require_llm", False)),
     )
 
     prompt_data = data.get("prompts", {})

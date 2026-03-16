@@ -31,12 +31,24 @@ class DailyPaperPipeline:
     top_k: int
     min_interval_hours: int
     window_days: int = 7
-    model_used: str = "glm-4.7"
+    model_used: str = "sonnet-4.6"
+    require_llm: bool = False
+    llm_enabled: bool = True
 
     def run(self, now: datetime | None = None) -> PipelineRunResult:
         """Run the full pipeline once."""
 
         now_utc = now.astimezone(timezone.utc) if now else datetime.now(timezone.utc)
+
+        if self.require_llm and not self.llm_enabled:
+            print("[STEP] Aborted: require_llm=True but AI_MODEL_API_KEY / AI_MODEL_URL not configured")
+            return PipelineRunResult(
+                generated=False,
+                summary_count=0,
+                output_path=None,
+                skipped_reason="require_llm=True but AI_MODEL_API_KEY / AI_MODEL_URL not configured",
+            )
+
         print("[STEP] Initializing cache database")
         self.cache.init_db()
 

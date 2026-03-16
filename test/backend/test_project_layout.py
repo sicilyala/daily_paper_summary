@@ -95,7 +95,7 @@ def test_backend_feature_packages_are_importable() -> None:
         "backend.app",
         "backend.config.paper_config",
         "backend.config.web_config",
-        "backend.models.glm_client",
+        "backend.models.ai_model_client",
         "backend.common.protocols",
         "backend.paper_process.normalize",
         "backend.paper_process.paper",

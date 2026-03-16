@@ -261,6 +261,8 @@ def run_pipeline(config_path: str | None = None, delete_last_file: bool = False)
         min_interval_hours=config.runtime.min_interval_hours,
         window_days=config.runtime.window_days,
         model_used=config.runtime.model_name,
+        require_llm=config.runtime.require_llm,
+        llm_enabled=ranker.llm_client.enabled,
     )
 
     print("[STEP] Pipeline execution started")

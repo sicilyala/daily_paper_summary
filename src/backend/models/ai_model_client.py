@@ -1,4 +1,4 @@
-"""Minimal GLM API client with JSON response parsing."""
+"""Generic AI model HTTP client with OpenAI-compatible chat completions API."""
 
 from __future__ import annotations
 
@@ -7,16 +7,24 @@ import os
 from urllib.request import Request, urlopen
 
 
-class GLMClient:
-    """HTTP client for GLM chat completion."""
+class AIModelClient:
+    """HTTP client for OpenAI-compatible chat completion endpoints."""
 
     def __init__(self, api_key: str | None = None, endpoint: str | None = None):
-        self.api_key = api_key or os.getenv("GLM_API_KEY", "")
-        self.endpoint = endpoint or "https://open.bigmodel.cn/api/paas/v4/chat/completions"
+        self.api_key = api_key or os.getenv("AI_MODEL_API_KEY", "")
+        self.endpoint = endpoint or os.getenv("AI_MODEL_URL", "")
+
+    @property
+    def enabled_api_key(self) -> bool:
+        return bool(self.api_key)
+
+    @property
+    def enabled_endpoint(self) -> bool:
+        return bool(self.endpoint)
 
     @property
     def enabled(self) -> bool:
-        return bool(self.api_key)
+        return self.enabled_api_key and self.enabled_endpoint
 
     def chat_json(
         self,
@@ -31,8 +39,11 @@ class GLMClient:
             Parsed JSON dict from assistant content.
         """
 
-        if not self.enabled:
-            raise RuntimeError("GLM_API_KEY is not set")
+        if not self.enabled_api_key:
+            raise RuntimeError("AI_MODEL_API_KEY is not set")
+
+        if not self.enabled_endpoint:
+            raise RuntimeError("AI_MODEL_URL is not set")
 
         payload = {
             "model": model,
