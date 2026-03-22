@@ -11,6 +11,7 @@ import re
 import time
 from datetime import datetime, timedelta, timezone
 from html import unescape
+from urllib.error import HTTPError
 from urllib.parse import urlencode, urljoin
 from urllib.request import Request, urlopen
 
@@ -116,6 +117,8 @@ class SsrnSource:
             with urlopen(request, timeout=self.timeout_seconds) as response:
                 charset = response.headers.get_content_charset() or "utf-8"
                 return response.read().decode(charset, errors="replace")
+        except HTTPError as exc:
+            raise RuntimeError(_format_ssrn_http_error(label=label, error=exc)) from exc
         except Exception as exc:
             raise RuntimeError(f"Failed to fetch {label}: {exc}") from exc
 
@@ -344,3 +347,18 @@ def _parse_ssrn_date(value: str) -> datetime | None:
         except ValueError:
             continue
     return None
+
+
+def _format_ssrn_http_error(label: str, error: HTTPError) -> str:
+    mitigation = ""
+    if error.headers is not None:
+        mitigation = (error.headers.get("Cf-Mitigated") or "").strip().lower()
+
+    if error.code == 403 and mitigation == "challenge":
+        return (
+            f"Cloudflare challenge blocked SSRN HTML scraping for {label}. "
+            "SSRN HTML fallback is currently blocked by bot protection; disable SSRN "
+            "or switch to a compliant feed/API backend."
+        )
+
+    return f"Failed to fetch {label}: HTTP {error.code}: {error.reason}"

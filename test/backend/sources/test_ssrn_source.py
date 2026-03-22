@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from email.message import Message
+from urllib.error import HTTPError
 
 import pytest
 
-from backend.sources.ssrn import SsrnSource
+from backend.sources.ssrn import SEARCH_URL, SsrnSource
 
 
 SEARCH_HTML = """
@@ -153,3 +155,24 @@ def test_search_recent_rejects_invalid_backend() -> None:
 
     with pytest.raises(ValueError, match="Unsupported SSRN backend"):
         source.search_recent()
+
+
+def test_fetch_search_html_reports_cloudflare_challenge(monkeypatch) -> None:
+    source = _build_source()
+    headers = Message()
+    headers["Cf-Mitigated"] = "challenge"
+    headers["Server"] = "cloudflare"
+
+    def _raise_http_error(request, timeout):
+        raise HTTPError(
+            url=request.full_url,
+            code=403,
+            msg="Forbidden",
+            hdrs=headers,
+            fp=None,
+        )
+
+    monkeypatch.setattr("backend.sources.ssrn.urlopen", _raise_http_error)
+
+    with pytest.raises(RuntimeError, match="Cloudflare challenge blocked SSRN HTML scraping"):
+        source._fetch_search_html()
